@@ -5,11 +5,12 @@ public class SphereMovement : MonoBehaviour
 {
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] private Transform cameraTransform; // Referenz zur Kamera
 
     [Header("Jump Settings")]
     [SerializeField] private float jumpForce = 5f;
-    [SerializeField] private LayerMask groundLayer; // Layer für den Boden
-    [SerializeField] private float groundCheckDistance = 0.6f; // Distanz zum Boden-Check
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private float groundCheckDistance = 0.6f;
 
     private Vector2 moveInput;
     private Rigidbody rb;
@@ -22,6 +23,12 @@ public class SphereMovement : MonoBehaviour
         if (rb == null)
         {
             Debug.LogError("Kein Rigidbody auf der Sphere gefunden!");
+        }
+
+        // Finde Kamera automatisch wenn nicht zugewiesen
+        if (cameraTransform == null)
+        {
+            cameraTransform = Camera.main.transform;
         }
     }
 
@@ -50,8 +57,17 @@ public class SphereMovement : MonoBehaviour
 
     private void MovePlayer()
     {
-        //convert 2D input to 3D movement
-        Vector3 movement = new Vector3(moveInput.x, 0f, moveInput.y);
+        // Berechne Kamera-Forward und Right (ohne Y-Komponente)
+        Vector3 cameraForward = cameraTransform.forward;
+        cameraForward.y = 0f;
+        cameraForward.Normalize();
+
+        Vector3 cameraRight = cameraTransform.right;
+        cameraRight.y = 0f;
+        cameraRight.Normalize();
+
+        // Bewegung relativ zur Kamera-Richtung
+        Vector3 movement = (cameraRight * moveInput.x + cameraForward * moveInput.y);
 
         rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
     }
@@ -65,8 +81,6 @@ public class SphereMovement : MonoBehaviour
     private void CheckGrounded()
     {
         isGrounded = Physics.Raycast(transform.position, Vector3.down, groundCheckDistance, groundLayer);
-
-        //debug ray for visualization
         Debug.DrawRay(transform.position, Vector3.down * groundCheckDistance, isGrounded ? Color.green : Color.red);
     }
 }
