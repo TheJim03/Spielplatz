@@ -406,6 +406,7 @@ MonoBehaviour:
   size: 64
   normalColor: {r: 0, g: 0, b: 0, a: 1}
   targetColor: {r: 0.9137255, g: 0.7332551, b: 0.054901958, a: 1}
+  enableColorChange: 1
   possessionManager: {fileID: 332169682}
 --- !u!4 &73564312
 Transform:
@@ -1515,6 +1516,8 @@ MonoBehaviour:
   switchVolume: 0.8
   switchToBallEffect: {fileID: 4158938980930706826, guid: 764f98aefd1c82d4c8970fa98e771368, type: 3}
   switchToBlockEffect: {fileID: 4158938980930706826, guid: 764f98aefd1c82d4c8970fa98e771368, type: 3}
+  enableAudioFeedback: 1
+  enableVisualFeedback: 1
 --- !u!4 &332169683
 Transform:
   m_ObjectHideFlags: 0
@@ -4789,8 +4792,12 @@ PrefabInstance:
       value: SlidingDoor
       objectReference: {fileID: 0}
     - target: {fileID: 2803899074833723214, guid: 5be520f21e6d2324b91d3a319ddffa53, type: 3}
+      propertyPath: openSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 2d4c1b9d36dfd8440bc7c5eaa4b78031, type: 3}
+    - target: {fileID: 2803899074833723214, guid: 5be520f21e6d2324b91d3a319ddffa53, type: 3}
       propertyPath: openHeight
-      value: 10
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4467369481306670389, guid: 5be520f21e6d2324b91d3a319ddffa53, type: 3}
       propertyPath: m_LocalPosition.x

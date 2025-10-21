@@ -1,0 +1,13 @@
+{
+    "asset": "ec8f8851c154ca04f86ecebf431169b9",
+    "fileName": "019a07d9-44e1-717c-8b18-3f012568c267.wav",
+    "prompt": "Modern Sliding sound",
+    "negativePrompt": "",
+    "model": "0ee39b33-2893-4e0f-8c46-0e0bdd4eda85",
+    "modelName": "Text to Sound",
+    "customSeed": -1,
+    "w3CTraceId": "551239b932f2be3509371ff43daea8ce",
+    "duration": 1.5,
+    "autoTrim": true,
+    "hasReference": false
+}
