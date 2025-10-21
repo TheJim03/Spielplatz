@@ -8,6 +8,9 @@ public class CrosshairUI : MonoBehaviour
     public Color normalColor = Color.white;
     public Color targetColor = Color.red;
 
+    [Header("Behavior Options")]
+    public bool enableColorChange = true;   // ✅ Haken zum Ein-/Ausschalten der Farbänderung
+
     [Header("Dependencies")]
     public PossessionManager possessionManager;
 
@@ -21,9 +24,13 @@ public class CrosshairUI : MonoBehaviour
         float y = (Screen.height - size) / 2f;
         Color prevColor = GUI.color;
 
-        GUI.color = lookingAtTarget ? targetColor : normalColor;
-        GUI.DrawTexture(new Rect(x, y, size, size), crosshairTexture);
+        // Nur färben, wenn erlaubt
+        if (enableColorChange && lookingAtTarget)
+            GUI.color = targetColor;
+        else
+            GUI.color = normalColor;
 
+        GUI.DrawTexture(new Rect(x, y, size, size), crosshairTexture);
         GUI.color = prevColor;
     }
 }

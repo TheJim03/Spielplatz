@@ -7,18 +7,23 @@ public class Coin : MonoBehaviour
     public int coinValue = 1;
 
     [Header("Visual Settings")]
-    public float rotationSpeed = 90f; // Geschwindigkeit der Rotation um Y-Achse
-    public float floatHeight = 0.5f; // Wie hoch beim Einsammeln
-    public float floatSpeed = 2f; // Geschwindigkeit der Auf/Ab Bewegung (optional)
-    public bool enableFloating = false; // Optional: Sanftes Auf/Ab schweben aktivieren
+    public float rotationSpeed = 90f;  // Geschwindigkeit der Rotation
+    public float floatHeight = 0.5f;   // Wie hoch beim Einsammeln
+    public float floatSpeed = 2f;      // Geschwindigkeit des Schwebens
+    public bool enableFloating = false; // Sanftes Auf/Ab-Schweben aktivieren
 
     [Header("Audio")]
     public AudioClip collectSound;
-    [Range(0f, 1f)]
-    public float soundVolume = 1f;
+    [Range(0f, 1f)] public float soundVolume = 1f;
 
     [Header("Effects")]
     public GameObject collectEffect;
+
+    [Header("Feedback Toggles")]
+    public bool enableAudioFeedback = true;     // ✅ Sound beim Einsammeln
+    public bool enableVisualFeedback = true;    // ✅ Partikel/VFX beim Einsammeln
+    public bool enableRotation = true;          // ✅ Rotation im Idle & Collect aktivieren
+    public bool enableDisappearAnimation = true; // ✅ Hochfliegen + Verblassen aktivieren
 
     private bool isCollected = false;
     private Material coinMaterial;
@@ -26,6 +31,7 @@ public class Coin : MonoBehaviour
 
     void Start()
     {
+        // Renderer vorbereiten (Kopie des Materials)
         Renderer renderer = GetComponent<Renderer>();
         if (renderer != null)
         {
@@ -38,27 +44,26 @@ public class Coin : MonoBehaviour
 
     void Update()
     {
-        if (!isCollected)
-        {
-            // Rotiere die Münze um die Y-Achse (dreht sich wie eine Münze)
-            transform.Rotate(0f, 0f, rotationSpeed * Time.deltaTime, Space.Self);
+        if (isCollected) return;
 
-            // Optional: Sanftes Auf und Ab schweben (deaktivierbar)
-            if (enableFloating)
-            {
-                float newY = startPosition.y + Mathf.Sin(Time.time * floatSpeed) * 0.2f;
-                transform.position = new Vector3(transform.position.x, newY, transform.position.z);
-            }
+        // 🔄 Rotation nur wenn aktiviert
+        if (enableRotation)
+        {
+            transform.Rotate(0f, 0f, rotationSpeed * Time.deltaTime, Space.Self);
+        }
+
+        // 🌊 Optionales Schweben
+        if (enableFloating)
+        {
+            float newY = startPosition.y + Mathf.Sin(Time.time * floatSpeed) * 0.2f;
+            transform.position = new Vector3(transform.position.x, newY, transform.position.z);
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Trigger mit: " + other.gameObject.name + " (Tag: " + other.tag + ")");
-
         if (other.CompareTag("Player") && !isCollected)
         {
-            Debug.Log("Münze wird eingesammelt!");
             isCollected = true;
             StartCoroutine(CollectAnimation());
         }
@@ -66,7 +71,7 @@ public class Coin : MonoBehaviour
 
     private IEnumerator CollectAnimation()
     {
-        // 1. Zähler erhöhen
+        // 1️⃣ Punkte hinzufügen
         if (ScoreManager.instance != null)
         {
             ScoreManager.instance.AddCoin(coinValue);
@@ -76,37 +81,44 @@ public class Coin : MonoBehaviour
             Debug.LogError("ScoreManager.instance ist NULL!");
         }
 
-        // 2. Sound abspielen
-        if (collectSound != null)
+        // 2️⃣ Sound (wenn erlaubt)
+        if (enableAudioFeedback && collectSound != null)
         {
             AudioSource.PlayClipAtPoint(collectSound, transform.position, soundVolume);
         }
 
-        // 3. Partikeleffekt
-        if (collectEffect != null)
+        // 3️⃣ Effekt (wenn erlaubt)
+        if (enableVisualFeedback && collectEffect != null)
         {
             Instantiate(collectEffect, transform.position, Quaternion.identity);
         }
 
-        // 4. Animation: Nach oben schweben und verblassen
+        // 4️⃣ Collider ausschalten, damit sie nicht mehr sammelbar ist
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = false;
+
+        // 5️⃣ Falls Verschwinde-Animation deaktiviert → direkt zerstören
+        if (!enableDisappearAnimation)
+        {
+            Destroy(gameObject);
+            yield break;
+        }
+
+        // 6️⃣ Animation: Nach oben schweben und verblassen
         float duration = 0.5f;
         float elapsed = 0f;
         Vector3 startPos = transform.position;
         Vector3 targetPos = startPos + Vector3.up * floatHeight;
-
-        // Deaktiviere Collider
-        Collider col = GetComponent<Collider>();
-        if (col != null) col.enabled = false;
 
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             float progress = elapsed / duration;
 
-            // Bewege nach oben
+            // Nach oben bewegen
             transform.position = Vector3.Lerp(startPos, targetPos, progress);
 
-            // Verblassen (Transparenz)
+            // Verblassen (nur wenn Material existiert)
             if (coinMaterial != null)
             {
                 Color color = coinMaterial.color;
@@ -114,13 +126,16 @@ public class Coin : MonoBehaviour
                 coinMaterial.color = color;
             }
 
-            // Weiter rotieren beim Einsammeln (um Y-Achse)
-            transform.Rotate(0f, rotationSpeed * 3f * Time.deltaTime, 0f, Space.Self);
+            // 🔄 Weiterdrehen beim Einsammeln (nur wenn aktiviert)
+            if (enableRotation)
+            {
+                transform.Rotate(0f, rotationSpeed * 3f * Time.deltaTime, 0f, Space.Self);
+            }
 
             yield return null;
         }
 
-        // 5. Münze zerstören
+        // 7️⃣ Münze zerstören
         Destroy(gameObject);
     }
 }

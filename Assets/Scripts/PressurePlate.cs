@@ -5,7 +5,7 @@ public class PressurePlate : MonoBehaviour
 {
     [Header("Plate Settings")]
     [SerializeField] private float pressDepth = 0.1f; // Wie tief die Platte gedrückt wird
-    [SerializeField] private float pressSpeed = 5f; // Wie schnell sie sich bewegt
+    [SerializeField] private float pressSpeed = 5f;   // Wie schnell sie sich bewegt
     [SerializeField] private bool stayPressed = false; // Bleibt gedrückt oder springt zurück?
 
     [Header("Visual")]
@@ -20,6 +20,11 @@ public class PressurePlate : MonoBehaviour
 
     [Header("Connected Doors")]
     [SerializeField] private SlidingDoor[] connectedDoors; // Array für mehrere Türen
+
+    [Header("Feedback Toggles")]
+    [SerializeField] private bool enableMovementFeedback = true; // ✅ Bewegung (rein/raus)
+    [SerializeField] private bool enableVisualFeedback = true;   // ✅ Farbwechsel
+    [SerializeField] private bool enableAudioFeedback = true;    // ✅ Sounds
 
     private Vector3 originalPosition;
     private Vector3 pressedPosition;
@@ -45,15 +50,25 @@ public class PressurePlate : MonoBehaviour
 
     void Update()
     {
-        // Smooth Bewegung zur Zielposition
-        Vector3 targetPos = (isPressed || objectsOnPlate > 0) ? pressedPosition : originalPosition;
-        transform.position = Vector3.Lerp(transform.position, targetPos, pressSpeed * Time.deltaTime);
+        bool plateShouldBeDown = (isPressed || objectsOnPlate > 0);
 
-        // Farbwechsel
-        if (plateMaterial != null)
+        // Smooth Bewegung zur Zielposition (nur wenn Movement-Feedback aktiv)
+        if (enableMovementFeedback)
         {
-            Color targetColor = (isPressed || objectsOnPlate > 0) ? pressedColor : normalColor;
+            Vector3 targetPos = plateShouldBeDown ? pressedPosition : originalPosition;
+            transform.position = Vector3.Lerp(transform.position, targetPos, pressSpeed * Time.deltaTime);
+        }
+
+        // Farbwechsel (nur wenn Visual-Feedback aktiv)
+        if (enableVisualFeedback && plateMaterial != null)
+        {
+            Color targetColor = plateShouldBeDown ? pressedColor : normalColor;
             plateMaterial.color = Color.Lerp(plateMaterial.color, targetColor, pressSpeed * Time.deltaTime);
+        }
+        else if (plateMaterial != null && !enableVisualFeedback)
+        {
+            // Falls Visual-Feedback aus: sichere Standardfarbe
+            plateMaterial.color = normalColor;
         }
     }
 
@@ -76,9 +91,12 @@ public class PressurePlate : MonoBehaviour
         {
             objectsOnPlate--;
 
-            if (objectsOnPlate <= 0 && !stayPressed)
+            if (objectsOnPlate <= 0)
             {
-                Release();
+                if (!stayPressed)
+                    Release();
+                else
+                    isPressed = true; // bleibt gedrückt
             }
         }
     }
@@ -86,10 +104,10 @@ public class PressurePlate : MonoBehaviour
     private void Press()
     {
         Debug.Log("Druckplatte aktiviert!");
-        isPressed = stayPressed; // Bei stayPressed bleibt sie gedrückt
+        isPressed = true;
 
-        // Sound abspielen
-        if (pressSound != null)
+        // Sound abspielen (wenn erlaubt)
+        if (enableAudioFeedback && pressSound != null)
         {
             AudioSource.PlayClipAtPoint(pressSound, transform.position, soundVolume);
         }
@@ -107,9 +125,10 @@ public class PressurePlate : MonoBehaviour
     private void Release()
     {
         Debug.Log("Druckplatte deaktiviert!");
+        isPressed = false;
 
-        // Sound abspielen
-        if (releaseSound != null)
+        // Sound abspielen (wenn erlaubt)
+        if (enableAudioFeedback && releaseSound != null)
         {
             AudioSource.PlayClipAtPoint(releaseSound, transform.position, soundVolume);
         }

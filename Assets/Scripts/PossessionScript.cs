@@ -29,6 +29,10 @@ public class PossessionManager : MonoBehaviour
     public ParticleSystem switchToBallEffect;
     public ParticleSystem switchToBlockEffect;
 
+    [Header("Feedback Toggles")]
+    public bool enableAudioFeedback = true;
+    public bool enableVisualFeedback = true;
+
     private enum Controlled { Ball, Block }
     private Controlled current = Controlled.Ball; // Startzustand (wird in Start initialisiert)
 
@@ -36,7 +40,6 @@ public class PossessionManager : MonoBehaviour
     private Camera mainCam;
     private bool isLookingAtBlock;
     private bool initialized = false;
-
 
     void Awake()
     {
@@ -87,8 +90,8 @@ public class PossessionManager : MonoBehaviour
         foreach (var s in ballControllers)  if (s) s.enabled = toBall;
         foreach (var s in blockControllers) if (s) s.enabled = !toBall;
 
-        // Audio nur bei tatsächlichem Wechsel
-        if (playAudio && audioSource)
+        // 🎧 Audio nur bei tatsächlichem Wechsel und wenn erlaubt
+        if (enableAudioFeedback && playAudio && audioSource)
         {
             var clip = toBall ? switchToBallClip : switchToBlockClip;
             if (clip)
@@ -97,8 +100,9 @@ public class PossessionManager : MonoBehaviour
                 audioSource.PlayOneShot(clip, switchVolume);
             }
         }
-        // ✨ Partikel-Effekt beim Wechsel
-        if (initialized && playVfx)
+
+        // ✨ Partikel-Effekt beim Wechsel (wenn erlaubt)
+        if (enableVisualFeedback && initialized && playVfx)
         {
             var prefab = toBall ? switchToBallEffect : switchToBlockEffect;
             if (prefab)
@@ -107,16 +111,13 @@ public class PossessionManager : MonoBehaviour
                     ? (ballObject ? ballObject.transform.position : transform.position)
                     : (blockRoot ? blockRoot.position : transform.position);
 
-                // Instanz erzeugen
                 var fx = Instantiate(prefab, pos, Quaternion.identity);
 
-                // Falls das Prefab Play On Awake AUS hat -> manuell starten
                 var main = fx.main;
-                main.playOnAwake = false;   // zur Sicherheit
-                fx.Clear(true);             // Partikel zurücksetzen
-                fx.Play(true);              // jetzt abspielen!
+                main.playOnAwake = false;
+                fx.Clear(true);
+                fx.Play(true);
 
-                // Aufräumen nach Laufzeit
                 float life = main.duration + main.startLifetime.constantMax + 0.5f;
                 Destroy(fx.gameObject, life);
             }
@@ -127,7 +128,6 @@ public class PossessionManager : MonoBehaviour
     {
         if (!mainCam || !blockRoot) return false;
 
-        // Ball-Layer ignorieren, damit man „durch die Kugel sieht“
         int mask = possessableMask;
         if (ballObject) mask &= ~(1 << ballObject.layer);
 
