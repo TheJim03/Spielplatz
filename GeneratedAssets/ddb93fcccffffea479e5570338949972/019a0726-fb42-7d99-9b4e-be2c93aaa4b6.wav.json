@@ -1,0 +1,13 @@
+{
+    "asset": "ddb93fcccffffea479e5570338949972",
+    "fileName": "019a0726-fb42-7d99-9b4e-be2c93aaa4b6.wav",
+    "prompt": "Collect Coin",
+    "negativePrompt": "",
+    "model": "0ee39b33-2893-4e0f-8c46-0e0bdd4eda85",
+    "modelName": "Text to Sound",
+    "customSeed": -1,
+    "w3CTraceId": "9e848b96c7c09a727fec0c9fbf77a924",
+    "duration": 1.0,
+    "autoTrim": true,
+    "hasReference": false
+}
