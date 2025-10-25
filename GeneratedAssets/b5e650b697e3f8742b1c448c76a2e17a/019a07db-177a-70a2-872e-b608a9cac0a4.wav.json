@@ -1,0 +1,13 @@
+{
+    "asset": "b5e650b697e3f8742b1c448c76a2e17a",
+    "fileName": "019a07db-177a-70a2-872e-b608a9cac0a4.wav",
+    "prompt": "Star Wars Door",
+    "negativePrompt": "",
+    "model": "0ee39b33-2893-4e0f-8c46-0e0bdd4eda85",
+    "modelName": "Text to Sound",
+    "customSeed": -1,
+    "w3CTraceId": "4394efa605dae2c435dccf5b557030f6",
+    "duration": 1.5,
+    "autoTrim": true,
+    "hasReference": false
+}

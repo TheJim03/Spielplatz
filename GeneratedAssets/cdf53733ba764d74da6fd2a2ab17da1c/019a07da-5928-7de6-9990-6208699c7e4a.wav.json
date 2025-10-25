@@ -1,0 +1,13 @@
+{
+    "asset": "cdf53733ba764d74da6fd2a2ab17da1c",
+    "fileName": "019a07da-5928-7de6-9990-6208699c7e4a.wav",
+    "prompt": "Normal Door",
+    "negativePrompt": "",
+    "model": "0ee39b33-2893-4e0f-8c46-0e0bdd4eda85",
+    "modelName": "Text to Sound",
+    "customSeed": -1,
+    "w3CTraceId": "fbf682cd1dbe744fbaa335509d91d3f3",
+    "duration": 1.5,
+    "autoTrim": true,
+    "hasReference": false
+}
