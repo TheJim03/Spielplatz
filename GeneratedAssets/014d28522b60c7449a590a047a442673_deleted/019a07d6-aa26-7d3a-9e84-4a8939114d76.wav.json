@@ -1,0 +1,13 @@
+{
+    "asset": "014d28522b60c7449a590a047a442673",
+    "fileName": "019a07d6-aa26-7d3a-9e84-4a8939114d76.wav",
+    "prompt": "Modern Sliding Door Open",
+    "negativePrompt": "",
+    "model": "0ee39b33-2893-4e0f-8c46-0e0bdd4eda85",
+    "modelName": "Text to Sound",
+    "customSeed": -1,
+    "w3CTraceId": "e619aefbcbe37c3921720af7277f7ba4",
+    "duration": 1.0,
+    "autoTrim": true,
+    "hasReference": false
+}
