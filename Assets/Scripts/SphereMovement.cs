@@ -18,114 +18,51 @@ public class BallMovement : MonoBehaviour
     public float slowMultiplier = 0.5f;
     public float slowDuration = 5f;
     public float slowCooldown = 20f;
+
     [Header("Audio")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float groundCheckDistance = 0.5f;
+
+    [Header("Juiciness (optional)")]
+    [SerializeField] private AudioClip rollingSound;
+    [SerializeField] private ParticleSystem movementParticles;
+
     private Rigidbody rb;
     private Transform cam;
-
-    // Sprinting
-    /*
-    private float sprintTimeLeft = 0f;
-    private float sprintCooldownTimer = 0f;
-    private bool sprintTimerRunning = false;
-    private bool isSprinting = false;
-    */
-
-    // Slowing
-    /*
-    private float slowTimeLeft = 0f;
-    private float slowCooldownTimer = 0f;
-    private bool slowTimerRunning = false;
-    private bool isSlowing = false;
-    */
+    private AudioSource audioSource;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         cam = Camera.main.transform;
 
-        // sprintTimeLeft = sprintDuration;
-        // slowTimeLeft = slowDuration;
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null && rollingSound != null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.clip = rollingSound;
+            audioSource.loop = true;
+            audioSource.playOnAwake = false;
+        }
     }
-    
+
     private bool IsGrounded()
     {
         Vector3 origin = transform.position + Vector3.up * 0.1f;
         bool hit = Physics.Raycast(origin, Vector3.down, groundCheckDistance + 0.1f, groundLayer);
-        Debug.DrawRay(origin, Vector3.down * (groundCheckDistance + 0.1f), hit ? Color.green : Color.red);
+
+        if (JuicinessSettings.instance != null && JuicinessSettings.instance.IsJuicy)
+        {
+            Debug.DrawRay(origin, Vector3.down * (groundCheckDistance + 0.1f), hit ? Color.green : Color.red);
+        }
+
         return hit;
     }
-    
 
     void FixedUpdate()
     {
-        // Gravity
         rb.AddForce(Physics.gravity * (gravityMultiplier - 1f), ForceMode.Acceleration);
 
-        // Sprint Logic (disabled)
-        /*
-        if (sprintCooldownTimer > 0f)
-        {
-            sprintCooldownTimer -= Time.fixedDeltaTime;
-        }
-        else
-        {
-            if (sprintTimerRunning)
-            {
-                sprintTimeLeft -= Time.fixedDeltaTime;
-
-                if (Input.GetKey(KeyCode.LeftControl) && sprintTimeLeft > 0f)
-                    isSprinting = true;
-                else
-                    isSprinting = false;
-
-                if (sprintTimeLeft <= 0f)
-                {
-                    isSprinting = false;
-                    sprintTimerRunning = false;
-                    sprintCooldownTimer = sprintCooldown;
-                    sprintTimeLeft = 0f;
-                }
-            }
-
-            if (!sprintTimerRunning && sprintCooldownTimer <= 0f && sprintTimeLeft <= 0f)
-                sprintTimeLeft = sprintDuration;
-        }
-        */
-
-        // Slow Logic (disabled)
-        /*
-        if (slowCooldownTimer > 0f)
-        {
-            slowCooldownTimer -= Time.fixedDeltaTime;
-        }
-        else
-        {
-            if (slowTimerRunning)
-            {
-                slowTimeLeft -= Time.fixedDeltaTime;
-
-                if (Input.GetKey(KeyCode.LeftShift) && slowTimeLeft > 0f)
-                    isSlowing = true;
-                else
-                    isSlowing = false;
-
-                if (slowTimeLeft <= 0f)
-                {
-                    isSlowing = false;
-                    slowTimerRunning = false;
-                    slowCooldownTimer = slowCooldown;
-                    slowTimeLeft = 0f;
-                }
-            }
-
-            if (!slowTimerRunning && slowCooldownTimer <= 0f && slowTimeLeft <= 0f)
-                slowTimeLeft = slowDuration;
-        }
-        */
-
-        // Movement
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
 
@@ -139,19 +76,77 @@ public class BallMovement : MonoBehaviour
 
         Vector3 moveDirection = (camForward * v + camRight * h).normalized;
 
+        bool juicy = JuicinessSettings.instance != null && JuicinessSettings.instance.IsJuicy;
+
         if (moveDirection.magnitude > 0)
         {
             float currentSpeed = moveSpeed;
-            // if (isSprinting) currentSpeed *= sprintMultiplier;
-            // if (isSlowing) currentSpeed *= slowMultiplier;
-
             Vector3 targetVelocity = moveDirection * currentSpeed + new Vector3(0, rb.linearVelocity.y, 0);
-            rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, targetVelocity, 0.15f);
-            rb.linearDamping = dragWhenMoving;
+
+            if (juicy)
+            {
+                // 🎮 Juicy: Smooth Lerp für weiches Ausrollen
+                rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, targetVelocity, 0.15f);
+                rb.linearDamping = dragWhenMoving;
+            }
+            else
+            {
+                // 🧊 Nicht juicy: Direkt snappen = statisch/stiff
+                rb.linearVelocity = new Vector3(targetVelocity.x, rb.linearVelocity.y, targetVelocity.z);
+                rb.linearDamping = 5f; // Höherer Drag = stoppt sofort
+            }
+
+            HandleMovementJuiciness(true);
         }
         else
         {
-            rb.linearDamping = dragWhenNotMoving;
+            if (!juicy)
+            {
+                // Sofort stoppen ohne Ausrollen
+                rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+                rb.linearDamping = 10f;
+            }
+            else
+            {
+                rb.linearDamping = dragWhenNotMoving;
+            }
+
+            HandleMovementJuiciness(false);
+        }
+    }
+
+    private void HandleMovementJuiciness(bool isMoving)
+    {
+        bool juicy = JuicinessSettings.instance != null && JuicinessSettings.instance.IsJuicy;
+
+        if (!juicy)
+        {
+            if (audioSource != null && audioSource.isPlaying) audioSource.Stop();
+            if (movementParticles != null && movementParticles.isPlaying) movementParticles.Stop();
+            return;
+        }
+
+        if (isMoving)
+        {
+            if (audioSource != null && !audioSource.isPlaying && rollingSound != null)
+            {
+                audioSource.Play();
+            }
+            if (movementParticles != null && !movementParticles.isPlaying)
+            {
+                movementParticles.Play();
+            }
+        }
+        else
+        {
+            if (audioSource != null && audioSource.isPlaying)
+            {
+                audioSource.Stop();
+            }
+            if (movementParticles != null && movementParticles.isPlaying)
+            {
+                movementParticles.Stop();
+            }
         }
     }
 }

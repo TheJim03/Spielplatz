@@ -1113,6 +1113,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   groundCheckDistance: 0.6
+  rollingSound: {fileID: 0}
+  movementParticles: {fileID: 0}
 --- !u!54 &259051643
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1518,6 +1520,9 @@ MonoBehaviour:
   switchToBlockEffect: {fileID: 4158938980930706826, guid: 764f98aefd1c82d4c8970fa98e771368, type: 3}
   enableAudioFeedback: 1
   enableVisualFeedback: 1
+  fpLayerName: PlayerBodyFP
+  cullingPostBlendDelay: 0.05
+  cullingBlendTimeout: 1
 --- !u!4 &332169683
 Transform:
   m_ObjectHideFlags: 0
@@ -3061,6 +3066,52 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 829036423}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &841115720
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 841115722}
+  - component: {fileID: 841115721}
+  m_Layer: 0
+  m_Name: juicyManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &841115721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 841115720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 458670ea5c444fd4da4b4b1c3d648c32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JuicinessSettings
+  juicinessEnabled: 1
+  toggleKey: 106
+--- !u!4 &841115722
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 841115720}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.03566, y: -0, z: -2.39774}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &879833361
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6405,3 +6456,4 @@ SceneRoots:
   - {fileID: 1121631264}
   - {fileID: 1682821232}
   - {fileID: 772435062}
+  - {fileID: 841115722}

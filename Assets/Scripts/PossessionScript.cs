@@ -48,7 +48,7 @@ public class PossessionManager : MonoBehaviour
 
     private AudioSource audioSource;
     private Camera mainCam;
-    private CinemachineBrain brain;          // fürs Blend-Tracking
+    private CinemachineBrain brain;
     private bool isLookingAtBlock;
     private bool initialized = false;
     private int playerBodyLayer = -1;
@@ -89,23 +89,34 @@ public class PossessionManager : MonoBehaviour
         current = who;
         bool toBall = (who == Controlled.Ball);
 
+        // Prüfe globale Juiciness-Einstellung
+        bool juicy = JuicinessSettings.instance != null && JuicinessSettings.instance.IsJuicy;
+
         // Kameras schalten
-        if (vcamBall)  vcamBall.Priority  = toBall ? 20 : 0;
-        if (vcamBlock) vcamBlock.Priority = toBall ? 0  : 20;
+        if (vcamBall) vcamBall.Priority = toBall ? 20 : 0;
+        if (vcamBlock) vcamBlock.Priority = toBall ? 0 : 20;
 
         // Kugel rendern
         if (ballObject) ballObject.SetActive(toBall);
 
         // Steuerung schalten
-        foreach (var s in ballControllers)  if (s) s.enabled = toBall;
+        foreach (var s in ballControllers) if (s) s.enabled = toBall;
         foreach (var s in blockControllers) if (s) s.enabled = !toBall;
 
-        // >>> NEU: Culling erst NACH dem Blend umschalten
+        // FP-Culling: nur wenn Juiciness AN → mit Blend-Wait, sonst sofort
         if (cullingRoutine != null) StopCoroutine(cullingRoutine);
-        cullingRoutine = StartCoroutine(SwapFPCullingAfterBlend(toBall));
+        if (juicy)
+        {
+            cullingRoutine = StartCoroutine(SwapFPCullingAfterBlend(toBall));
+        }
+        else
+        {
+            // 🧊 Ohne Juiciness: Sofort snappen (kein Blend-Wait)
+            SwapFPCullingImmediate(toBall);
+        }
 
-        // Audio
-        if (enableAudioFeedback && playAudio && audioSource)
+        // 🔊 Audio NUR wenn Juiciness AN
+        if (enableAudioFeedback && juicy && playAudio && audioSource)
         {
             var clip = toBall ? switchToBallClip : switchToBlockClip;
             if (clip)
@@ -115,8 +126,8 @@ public class PossessionManager : MonoBehaviour
             }
         }
 
-        // VFX
-        if (enableVisualFeedback && initialized && playVfx)
+        // 🎆 VFX NUR wenn Juiciness AN
+        if (enableVisualFeedback && juicy && initialized && playVfx)
         {
             var prefab = toBall ? switchToBallEffect : switchToBlockEffect;
             if (prefab)
@@ -146,16 +157,23 @@ public class PossessionManager : MonoBehaviour
         if (cullingPostBlendDelay > 0f) yield return new WaitForSeconds(cullingPostBlendDelay);
 
         int bit = 1 << playerBodyLayer;
-        if (toBall) mainCam.cullingMask |= bit;   // zurück zur Kugel -> Körper wieder sichtbar
-        else        mainCam.cullingMask &= ~bit;  // in Block -> Körper ausblenden
+        if (toBall) mainCam.cullingMask |= bit;
+        else mainCam.cullingMask &= ~bit;
     }
 
-    // Robust gegen API-Unterschiede: prüft, ob der Brain noch blendet
+    // 🧊 Neue Methode: Sofortiges Culling ohne Blend-Wartezeit
+    void SwapFPCullingImmediate(bool toBall)
+    {
+        if (!mainCam || playerBodyLayer < 0) return;
+
+        int bit = 1 << playerBodyLayer;
+        if (toBall) mainCam.cullingMask |= bit;
+        else mainCam.cullingMask &= ~bit;
+    }
+
     static bool IsBrainBlending(CinemachineBrain b)
     {
-        // CM v2/v3: ActiveBlend != null → blendet
         try { return b.ActiveBlend != null; } catch { }
-        // Fallback: wenn Eigenschaft nicht existiert
         return false;
     }
 

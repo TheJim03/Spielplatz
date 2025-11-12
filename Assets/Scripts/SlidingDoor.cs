@@ -3,20 +3,20 @@ using UnityEngine;
 public class SlidingDoor : MonoBehaviour
 {
     [Header("Door Settings")]
-    [SerializeField] private float openHeight = 4f;   // Wie hoch die Tür sich öffnet
-    [SerializeField] private float moveSpeed = 2f;    // Geschwindigkeit der Bewegung
-    [SerializeField] private bool startOpen = false;  // Startet die Tür offen?
+    [SerializeField] private float openHeight = 4f;
+    [SerializeField] private float moveSpeed = 2f;
+    [SerializeField] private bool startOpen = false;
 
     [Header("Audio")]
     [SerializeField] private AudioClip openSound;
     [SerializeField] private AudioClip closeSound;
-    [SerializeField] private AudioSource doorAudioSource; // Optional: Eigene AudioSource
+    [SerializeField] private AudioSource doorAudioSource;
     [Range(0f, 1f)]
     [SerializeField] private float soundVolume = 0.7f;
 
     [Header("Feedback Toggles")]
-    [SerializeField] private bool enableMovement = true; // ✅ Animation ein/aus
-    [SerializeField] private bool enableAudio = true;    // ✅ Sound ein/aus
+    [SerializeField] private bool enableMovement = true;
+    [SerializeField] private bool enableAudio = true;
 
     private Vector3 closedPosition;
     private Vector3 openPosition;
@@ -28,11 +28,14 @@ public class SlidingDoor : MonoBehaviour
         closedPosition = transform.position;
         openPosition = closedPosition + Vector3.up * openHeight;
 
-        // Startzustand
         isOpen = startOpen;
-        if (!enableMovement)
+
+        // Prüfe Juiciness für Startposition
+        bool juicy = JuicinessSettings.instance == null || JuicinessSettings.instance.IsJuicy;
+        bool useAnimation = enableMovement && juicy;
+
+        if (!useAnimation)
         {
-            // direkt an Zielposition snappen, wenn Animation aus
             transform.position = isOpen ? openPosition : closedPosition;
         }
         else if (startOpen)
@@ -40,12 +43,11 @@ public class SlidingDoor : MonoBehaviour
             transform.position = openPosition;
         }
 
-        // AudioSource nur anlegen, wenn Audio aktiv und Clips vorhanden
         if (enableAudio && doorAudioSource == null && (openSound != null || closeSound != null))
         {
             doorAudioSource = gameObject.AddComponent<AudioSource>();
             doorAudioSource.playOnAwake = false;
-            doorAudioSource.spatialBlend = 1f; // 3D Sound
+            doorAudioSource.spatialBlend = 1f;
         }
     }
 
@@ -53,7 +55,11 @@ public class SlidingDoor : MonoBehaviour
     {
         Vector3 targetPos = isOpen ? openPosition : closedPosition;
 
-        if (enableMovement)
+        // Prüfe globale Juiciness-Einstellung
+        bool juicy = JuicinessSettings.instance == null || JuicinessSettings.instance.IsJuicy;
+        bool useAnimation = enableMovement && juicy;
+
+        if (useAnimation)
         {
             if (Vector3.Distance(transform.position, targetPos) > 0.01f)
             {
@@ -67,7 +73,7 @@ public class SlidingDoor : MonoBehaviour
         }
         else
         {
-            // Ohne Animation: immer direkt am Ziel stehen
+            // Ohne Animation: direkt snappen
             if (transform.position != targetPos)
                 transform.position = targetPos;
 
@@ -80,8 +86,14 @@ public class SlidingDoor : MonoBehaviour
         if (!isOpen)
         {
             isOpen = true;
-            if (!enableMovement) transform.position = openPosition; // snap
-            if (enableAudio) PlaySound(openSound);
+
+            bool juicy = JuicinessSettings.instance == null || JuicinessSettings.instance.IsJuicy;
+            if (!enableMovement || !juicy)
+                transform.position = openPosition;
+
+            if (enableAudio && juicy)
+                PlaySound(openSound);
+
             Debug.Log("Tür öffnet sich!");
         }
     }
@@ -91,8 +103,14 @@ public class SlidingDoor : MonoBehaviour
         if (isOpen)
         {
             isOpen = false;
-            if (!enableMovement) transform.position = closedPosition; // snap
-            if (enableAudio) PlaySound(closeSound);
+
+            bool juicy = JuicinessSettings.instance == null || JuicinessSettings.instance.IsJuicy;
+            if (!enableMovement || !juicy)
+                transform.position = closedPosition;
+
+            if (enableAudio && juicy)
+                PlaySound(closeSound);
+
             Debug.Log("Tür schließt sich!");
         }
     }
@@ -118,7 +136,6 @@ public class SlidingDoor : MonoBehaviour
         }
     }
 
-    // Visualisierung im Editor
     private void OnDrawGizmos()
     {
         if (!Application.isPlaying)
