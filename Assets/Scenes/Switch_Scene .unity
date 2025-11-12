@@ -279,6 +279,13 @@ MonoBehaviour:
   juicyMode: 0
   fovKickOnSprint: 8
   squashAmount: 0.15
+<<<<<<< Updated upstream
+=======
+  rb: {fileID: 0}
+  desiredVel: {x: 0, y: 0, z: 0}
+  originalScale: {x: 0, y: 0, z: 0}
+  squashCooldown: 0
+>>>>>>> Stashed changes
 --- !u!1 &256869656
 GameObject:
   m_ObjectHideFlags: 0
@@ -323,6 +330,10 @@ MonoBehaviour:
   bigJump: 5.5
   switchKey: 9
   resetKey: 114
+<<<<<<< Updated upstream
+=======
+  controllingSmall: 1
+>>>>>>> Stashed changes
 --- !u!4 &256869658
 Transform:
   m_ObjectHideFlags: 0
@@ -493,6 +504,11 @@ MonoBehaviour:
   followLerp: 8
   baseFOV: 60
   lerpFOV: 8
+<<<<<<< Updated upstream
+=======
+  targetFOV: 0
+  cam: {fileID: 0}
+>>>>>>> Stashed changes
 --- !u!1 &441335784
 GameObject:
   m_ObjectHideFlags: 0
@@ -780,6 +796,13 @@ MonoBehaviour:
   juicyMode: 0
   fovKickOnSprint: 8
   squashAmount: 0.15
+<<<<<<< Updated upstream
+=======
+  rb: {fileID: 0}
+  desiredVel: {x: 0, y: 0, z: 0}
+  originalScale: {x: 0, y: 0, z: 0}
+  squashCooldown: 0
+>>>>>>> Stashed changes
 --- !u!1 &1721335122
 GameObject:
   m_ObjectHideFlags: 0
