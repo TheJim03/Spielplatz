@@ -9,7 +9,7 @@ public class CrosshairUI : MonoBehaviour
     public Color targetColor = Color.red;
 
     [Header("Behavior Options")]
-    public bool enableColorChange = true;   // ✅ Haken zum Ein-/Ausschalten der Farbänderung
+    public bool enableColorChange = true;   // lokaler Schalter
 
     [Header("Dependencies")]
     public PossessionManager possessionManager;
@@ -20,17 +20,19 @@ public class CrosshairUI : MonoBehaviour
 
         bool lookingAtTarget = possessionManager && possessionManager.IsLookingAtTargetPublic();
 
+        // globaler Juicy-Schalter (J) – fehlt er, default = true
+        bool juicyOn = JuicinessSettings.instance == null || JuicinessSettings.instance.IsJuicy;
+
         float x = (Screen.width - size) / 2f;
         float y = (Screen.height - size) / 2f;
-        Color prevColor = GUI.color;
 
-        // Nur färben, wenn erlaubt
-        if (enableColorChange && lookingAtTarget)
+        var prev = GUI.color;
+        if (enableColorChange && juicyOn && lookingAtTarget)
             GUI.color = targetColor;
         else
             GUI.color = normalColor;
 
         GUI.DrawTexture(new Rect(x, y, size, size), crosshairTexture);
-        GUI.color = prevColor;
+        GUI.color = prev;
     }
 }
