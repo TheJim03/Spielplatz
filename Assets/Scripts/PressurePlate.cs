@@ -7,6 +7,7 @@ public class PressurePlate : MonoBehaviour
     [SerializeField] private float pressDepth = 0.1f;
     [SerializeField] private float pressSpeed = 5f;
     [SerializeField] private bool stayPressed = false;
+    [SerializeField] private string layer = "";
 
     [Header("Visual")]
     [SerializeField] private Color normalColor = Color.gray;
@@ -79,7 +80,7 @@ public class PressurePlate : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag(layer))
         {
             objectsOnPlate++;
 
@@ -92,7 +93,7 @@ public class PressurePlate : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag(layer))
         {
             objectsOnPlate--;
 

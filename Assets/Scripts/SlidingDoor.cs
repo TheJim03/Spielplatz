@@ -14,6 +14,12 @@ public class SlidingDoor : MonoBehaviour
     [Range(0f, 1f)]
     [SerializeField] private float soundVolume = 0.7f;
 
+    [Header("Visual Settings")]
+    [SerializeField] private bool enableColorChange = true;
+    [SerializeField] private Color closedColor = Color.red;
+    [SerializeField] private Color openColor = Color.green;
+    [SerializeField] private float colorChangeSpeed = 3f;
+
     [Header("Feedback Toggles")]
     [SerializeField] private bool enableMovement = true;
     [SerializeField] private bool enableAudio = true;
@@ -22,6 +28,8 @@ public class SlidingDoor : MonoBehaviour
     private Vector3 openPosition;
     private bool isOpen = false;
     private bool isMoving = false;
+    private Renderer doorRenderer;
+    private Material doorMaterial;
 
     void Start()
     {
@@ -29,6 +37,15 @@ public class SlidingDoor : MonoBehaviour
         openPosition = closedPosition + Vector3.up * openHeight;
 
         isOpen = startOpen;
+
+        // Material-Setup für Farbwechsel
+        doorRenderer = GetComponent<Renderer>();
+        if (doorRenderer != null)
+        {
+            doorMaterial = new Material(doorRenderer.material);
+            doorRenderer.material = doorMaterial;
+            doorMaterial.color = isOpen ? openColor : closedColor;
+        }
 
         // Prüfe Juiciness für Startposition
         bool juicy = JuicinessSettings.instance == null || JuicinessSettings.instance.IsJuicy;
@@ -59,6 +76,7 @@ public class SlidingDoor : MonoBehaviour
         bool juicy = JuicinessSettings.instance == null || JuicinessSettings.instance.IsJuicy;
         bool useAnimation = enableMovement && juicy;
 
+        // Positions-Animation
         if (useAnimation)
         {
             if (Vector3.Distance(transform.position, targetPos) > 0.01f)
@@ -78,6 +96,23 @@ public class SlidingDoor : MonoBehaviour
                 transform.position = targetPos;
 
             isMoving = false;
+        }
+
+        // Farb-Animation (nur wenn Juiciness AN)
+        if (enableColorChange && doorMaterial != null)
+        {
+            Color targetColor = isOpen ? openColor : closedColor;
+
+            if (juicy)
+            {
+                // 🎨 Smooth Farbübergang
+                doorMaterial.color = Color.Lerp(doorMaterial.color, targetColor, colorChangeSpeed * Time.deltaTime);
+            }
+            else
+            {
+                // 🧊 Sofort snappen
+                doorMaterial.color = targetColor;
+            }
         }
     }
 
