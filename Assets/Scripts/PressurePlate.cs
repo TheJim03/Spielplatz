@@ -4,9 +4,9 @@ using UnityEngine.Events;
 public class PressurePlate : MonoBehaviour
 {
     [Header("Plate Settings")]
-    [SerializeField] private float pressDepth = 0.1f; // Wie tief die Platte gedrückt wird
-    [SerializeField] private float pressSpeed = 5f;   // Wie schnell sie sich bewegt
-    [SerializeField] private bool stayPressed = false; // Bleibt gedrückt oder springt zurück?
+    [SerializeField] private float pressDepth = 0.1f;
+    [SerializeField] private float pressSpeed = 5f;
+    [SerializeField] private bool stayPressed = false;
 
     [Header("Visual")]
     [SerializeField] private Color normalColor = Color.gray;
@@ -19,12 +19,12 @@ public class PressurePlate : MonoBehaviour
     [SerializeField] private float soundVolume = 0.5f;
 
     [Header("Connected Doors")]
-    [SerializeField] private SlidingDoor[] connectedDoors; // Array für mehrere Türen
+    [SerializeField] private SlidingDoor[] connectedDoors;
 
     [Header("Feedback Toggles")]
-    [SerializeField] private bool enableMovementFeedback = true; // ✅ Bewegung (rein/raus)
-    [SerializeField] private bool enableVisualFeedback = true;   // ✅ Farbwechsel
-    [SerializeField] private bool enableAudioFeedback = true;    // ✅ Sounds
+    [SerializeField] private bool enableMovementFeedback = true;
+    [SerializeField] private bool enableVisualFeedback = true;
+    [SerializeField] private bool enableAudioFeedback = true;
 
     private Vector3 originalPosition;
     private Vector3 pressedPosition;
@@ -38,7 +38,6 @@ public class PressurePlate : MonoBehaviour
         originalPosition = transform.position;
         pressedPosition = originalPosition - Vector3.up * pressDepth;
 
-        // Material Setup
         plateRenderer = GetComponent<Renderer>();
         if (plateRenderer != null)
         {
@@ -51,23 +50,29 @@ public class PressurePlate : MonoBehaviour
     void Update()
     {
         bool plateShouldBeDown = (isPressed || objectsOnPlate > 0);
+        bool juicy = JuicinessSettings.instance != null && JuicinessSettings.instance.IsJuicy;
 
-        // Smooth Bewegung zur Zielposition (nur wenn Movement-Feedback aktiv)
-        if (enableMovementFeedback)
+        // 🎮 Bewegung nur wenn Juiciness AN
+        if (enableMovementFeedback && juicy)
         {
             Vector3 targetPos = plateShouldBeDown ? pressedPosition : originalPosition;
             transform.position = Vector3.Lerp(transform.position, targetPos, pressSpeed * Time.deltaTime);
         }
+        else if (enableMovementFeedback && !juicy)
+        {
+            // 🧊 Ohne Juiciness: Direkt snappen (keine Animation)
+            transform.position = plateShouldBeDown ? pressedPosition : originalPosition;
+        }
 
-        // Farbwechsel (nur wenn Visual-Feedback aktiv)
-        if (enableVisualFeedback && plateMaterial != null)
+        // 🎨 Farbwechsel nur wenn Juiciness AN
+        if (enableVisualFeedback && juicy && plateMaterial != null)
         {
             Color targetColor = plateShouldBeDown ? pressedColor : normalColor;
             plateMaterial.color = Color.Lerp(plateMaterial.color, targetColor, pressSpeed * Time.deltaTime);
         }
-        else if (plateMaterial != null && !enableVisualFeedback)
+        else if (plateMaterial != null)
         {
-            // Falls Visual-Feedback aus: sichere Standardfarbe
+            // 🧊 Ohne Juiciness: Immer Normalfarbe
             plateMaterial.color = normalColor;
         }
     }
@@ -78,7 +83,7 @@ public class PressurePlate : MonoBehaviour
         {
             objectsOnPlate++;
 
-            if (objectsOnPlate == 1) // Nur beim ersten Objekt
+            if (objectsOnPlate == 1)
             {
                 Press();
             }
@@ -96,7 +101,7 @@ public class PressurePlate : MonoBehaviour
                 if (!stayPressed)
                     Release();
                 else
-                    isPressed = true; // bleibt gedrückt
+                    isPressed = true;
             }
         }
     }
@@ -106,13 +111,14 @@ public class PressurePlate : MonoBehaviour
         Debug.Log("Druckplatte aktiviert!");
         isPressed = true;
 
-        // Sound abspielen (wenn erlaubt)
-        if (enableAudioFeedback && pressSound != null)
+        bool juicy = JuicinessSettings.instance != null && JuicinessSettings.instance.IsJuicy;
+
+        // 🔊 Sound nur wenn Juiciness AN
+        if (enableAudioFeedback && juicy && pressSound != null)
         {
             AudioSource.PlayClipAtPoint(pressSound, transform.position, soundVolume);
         }
 
-        // Alle verbundenen Türen öffnen
         foreach (SlidingDoor door in connectedDoors)
         {
             if (door != null)
@@ -127,13 +133,14 @@ public class PressurePlate : MonoBehaviour
         Debug.Log("Druckplatte deaktiviert!");
         isPressed = false;
 
-        // Sound abspielen (wenn erlaubt)
-        if (enableAudioFeedback && releaseSound != null)
+        bool juicy = JuicinessSettings.instance != null && JuicinessSettings.instance.IsJuicy;
+
+        // 🔊 Sound nur wenn Juiciness AN
+        if (enableAudioFeedback && juicy && releaseSound != null)
         {
             AudioSource.PlayClipAtPoint(releaseSound, transform.position, soundVolume);
         }
 
-        // Alle verbundenen Türen schließen
         foreach (SlidingDoor door in connectedDoors)
         {
             if (door != null)

@@ -7,10 +7,10 @@ public class Coin : MonoBehaviour
     public int coinValue = 1;
 
     [Header("Visual Settings")]
-    public float rotationSpeed = 90f;  // Geschwindigkeit der Rotation
-    public float floatHeight = 0.5f;   // Wie hoch beim Einsammeln
-    public float floatSpeed = 2f;      // Geschwindigkeit des Schwebens
-    public bool enableFloating = false; // Sanftes Auf/Ab-Schweben aktivieren
+    public float rotationSpeed = 90f;
+    public float floatHeight = 0.5f;
+    public float floatSpeed = 2f;
+    public bool enableFloating = false;
 
     [Header("Audio")]
     public AudioClip collectSound;
@@ -20,10 +20,10 @@ public class Coin : MonoBehaviour
     public GameObject collectEffect;
 
     [Header("Feedback Toggles")]
-    public bool enableAudioFeedback = true;     // ✅ Sound beim Einsammeln
-    public bool enableVisualFeedback = true;    // ✅ Partikel/VFX beim Einsammeln
-    public bool enableRotation = true;          // ✅ Rotation im Idle & Collect aktivieren
-    public bool enableDisappearAnimation = true; // ✅ Hochfliegen + Verblassen aktivieren
+    public bool enableAudioFeedback = true;
+    public bool enableVisualFeedback = true;
+    public bool enableRotation = true;
+    public bool enableDisappearAnimation = true;
 
     private bool isCollected = false;
     private Material coinMaterial;
@@ -31,7 +31,6 @@ public class Coin : MonoBehaviour
 
     void Start()
     {
-        // Renderer vorbereiten (Kopie des Materials)
         Renderer renderer = GetComponent<Renderer>();
         if (renderer != null)
         {
@@ -46,14 +45,16 @@ public class Coin : MonoBehaviour
     {
         if (isCollected) return;
 
-        // 🔄 Rotation nur wenn aktiviert
-        if (enableRotation)
+        bool juicy = JuicinessSettings.instance != null && JuicinessSettings.instance.IsJuicy;
+
+        // 🔄 Rotation NUR wenn Juiciness AN
+        if (enableRotation && juicy)
         {
             transform.Rotate(0f, 0f, rotationSpeed * Time.deltaTime, Space.Self);
         }
 
-        // 🌊 Optionales Schweben
-        if (enableFloating)
+        // 🎈 Schweben NUR wenn Juiciness AN
+        if (enableFloating && juicy)
         {
             float newY = startPosition.y + Mathf.Sin(Time.time * floatSpeed) * 0.2f;
             transform.position = new Vector3(transform.position.x, newY, transform.position.z);
@@ -71,40 +72,38 @@ public class Coin : MonoBehaviour
 
     private IEnumerator CollectAnimation()
     {
-        // 1️⃣ Punkte hinzufügen
+        bool juicy = JuicinessSettings.instance != null && JuicinessSettings.instance.IsJuicy;
+
+        // 1️⃣ Punkte hinzufügen (immer)
         if (ScoreManager.instance != null)
         {
             ScoreManager.instance.AddCoin(coinValue);
         }
-        else
-        {
-            Debug.LogError("ScoreManager.instance ist NULL!");
-        }
 
-        // 2️⃣ Sound (wenn erlaubt)
-        if (enableAudioFeedback && collectSound != null)
+        // 2️⃣ Sound NUR wenn Juiciness AN
+        if (enableAudioFeedback && juicy && collectSound != null)
         {
             AudioSource.PlayClipAtPoint(collectSound, transform.position, soundVolume);
         }
 
-        // 3️⃣ Effekt (wenn erlaubt)
-        if (enableVisualFeedback && collectEffect != null)
+        // 3️⃣ Effekt NUR wenn Juiciness AN
+        if (enableVisualFeedback && juicy && collectEffect != null)
         {
             Instantiate(collectEffect, transform.position, Quaternion.identity);
         }
 
-        // 4️⃣ Collider ausschalten, damit sie nicht mehr sammelbar ist
+        // 4️⃣ Collider ausschalten
         Collider col = GetComponent<Collider>();
         if (col != null) col.enabled = false;
 
-        // 5️⃣ Falls Verschwinde-Animation deaktiviert → direkt zerstören
-        if (!enableDisappearAnimation)
+        // 5️⃣ Ohne Juiciness: Sofort zerstören (keine Animation)
+        if (!enableDisappearAnimation || !juicy)
         {
             Destroy(gameObject);
             yield break;
         }
 
-        // 6️⃣ Animation: Nach oben schweben und verblassen
+        // 6️⃣ Juicy Animation: Schweben + Verblassen
         float duration = 0.5f;
         float elapsed = 0f;
         Vector3 startPos = transform.position;
@@ -115,10 +114,8 @@ public class Coin : MonoBehaviour
             elapsed += Time.deltaTime;
             float progress = elapsed / duration;
 
-            // Nach oben bewegen
             transform.position = Vector3.Lerp(startPos, targetPos, progress);
 
-            // Verblassen (nur wenn Material existiert)
             if (coinMaterial != null)
             {
                 Color color = coinMaterial.color;
@@ -126,7 +123,6 @@ public class Coin : MonoBehaviour
                 coinMaterial.color = color;
             }
 
-            // 🔄 Weiterdrehen beim Einsammeln (nur wenn aktiviert)
             if (enableRotation)
             {
                 transform.Rotate(0f, rotationSpeed * 3f * Time.deltaTime, 0f, Space.Self);
@@ -135,7 +131,6 @@ public class Coin : MonoBehaviour
             yield return null;
         }
 
-        // 7️⃣ Münze zerstören
         Destroy(gameObject);
     }
 }
