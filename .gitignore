@@ -100,3 +100,6 @@ InitTestScene*.unity*
 
 # idea fuer rider
 *.idea
+
+Assets/BK_AlchemistHouse.meta
+Assets/BK_AlchemistHouse/
