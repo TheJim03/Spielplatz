@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 /// <summary>
 /// Zentraler Manager für globale Juiciness-Einstellungen.
@@ -14,11 +15,17 @@ public class JuicinessSettings : MonoBehaviour
     [Header("Input")]
     [SerializeField] private KeyCode toggleKey = KeyCode.J;
 
+    [Header("UI-Anzeige")]
+    [SerializeField] private TextMeshProUGUI juicinessText;
+
+    [Header("Visuelle Verbesserungen (einfach)")]
+    [SerializeField] private Light mainLight;
+    [SerializeField] private Camera mainCamera;
+
     public bool IsJuicy => juicinessEnabled;
 
     private void Awake()
     {
-        // Singleton pattern
         if (instance == null)
         {
             instance = this;
@@ -28,6 +35,18 @@ public class JuicinessSettings : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    private void Start()
+    {
+        if (mainLight == null)
+            mainLight = FindFirstObjectByType<Light>();
+
+        if (mainCamera == null)
+            mainCamera = Camera.main;
+
+        UpdateVisuals();
+        UpdateJuicinessText();
     }
 
     private void Update()
@@ -42,10 +61,31 @@ public class JuicinessSettings : MonoBehaviour
     {
         juicinessEnabled = !juicinessEnabled;
         Debug.Log($"Juiciness ist jetzt: {(juicinessEnabled ? "AN" : "AUS")}");
+        UpdateJuicinessText();
+        UpdateVisuals();
     }
 
-    public void SetJuiciness(bool enabled)
+    private void UpdateJuicinessText()
     {
-        juicinessEnabled = enabled;
+        if (juicinessText != null)
+        {
+            juicinessText.text = "Juiciness: " + (juicinessEnabled ? "ON" : "OFF");
+            juicinessText.color = juicinessEnabled ? Color.green : Color.red;
+        }
+    }
+
+    private void UpdateVisuals()
+    {
+        // einfache visuelle “Juiciness”-Änderungen
+        if (mainLight != null)
+        {
+            mainLight.intensity = juicinessEnabled ? 1.5f : 1f;
+            mainLight.color = juicinessEnabled ? new Color(1f, 0.95f, 0.8f) : Color.white;
+        }
+
+        if (mainCamera != null)
+        {
+            mainCamera.backgroundColor = juicinessEnabled ? new Color(0.95f, 0.95f, 1f) : Color.gray;
+        }
     }
 }
