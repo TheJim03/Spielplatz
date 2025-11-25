@@ -6083,7 +6083,7 @@ MonoBehaviour:
   enableVisualFeedback: 1
   fpLayerName: PlayerBodyFP
   cullingPostBlendDelay: 1.5
-  cullingBlendTimeout: 1
+  cullingBlendTimeout: 0.5
 --- !u!4 &332169683
 Transform:
   m_ObjectHideFlags: 0
@@ -16548,6 +16548,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: SlidingDoor
       objectReference: {fileID: 0}
+    - target: {fileID: 2803899074833723214, guid: 5be520f21e6d2324b91d3a319ddffa53, type: 3}
+      propertyPath: openSound
+      value: 
+      objectReference: {fileID: 8300000, guid: cdf53733ba764d74da6fd2a2ab17da1c, type: 3}
+    - target: {fileID: 2803899074833723214, guid: 5be520f21e6d2324b91d3a319ddffa53, type: 3}
+      propertyPath: startOpen
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2803899074833723214, guid: 5be520f21e6d2324b91d3a319ddffa53, type: 3}
+      propertyPath: closeSound
+      value: 
+      objectReference: {fileID: 8300000, guid: cdf53733ba764d74da6fd2a2ab17da1c, type: 3}
     - target: {fileID: 4467369481306670389, guid: 5be520f21e6d2324b91d3a319ddffa53, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.25271142
@@ -29658,6 +29670,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: IntWoodFloor01 (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 5675996907840403634, guid: 1e0a805ecad8b574b8013b3939f2c4ef, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 8e5c8270d76142d4e9846d95407e2fe7, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -29772,6 +29788,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6610711763266742507, guid: 9e792ff62276a4b42a50e9a97bc1362f, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 01a6dcd7e7b418046b9553dd214b6b99, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -30300,6 +30320,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7478936949761342722, guid: 01786f943f0333c49b940a64b3427561, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: af5ca501e4fddf943ab104fc3aa2270f, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -30655,6 +30679,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 33516235}
     m_Modifications:
+    - target: {fileID: 1553962322300401245, guid: 3df69e45ad5c94d45a078bbad231a9b9, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e7a946dee9980614bba5b522e02bc1f4, type: 2}
     - target: {fileID: 2858353592159737925, guid: 3df69e45ad5c94d45a078bbad231a9b9, type: 3}
       propertyPath: m_Name
       value: Painting01 (2)
@@ -30773,6 +30801,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Painting01 (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 5513437679736333018, guid: 4ca8d03aacfe8a04da58b096d40406ed, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: efe64092656388b4590faef5c7235b5d, type: 2}
     - target: {fileID: 6398924113297066264, guid: 4ca8d03aacfe8a04da58b096d40406ed, type: 3}
       propertyPath: m_LocalPosition.x
       value: 18.66
@@ -31041,6 +31073,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8548001678418748201, guid: 743639150ba68fe40a6b106ca53fb4aa, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 7c0fa3e1618571c4e989b0050e1d75d8, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
