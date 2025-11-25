@@ -102,3 +102,13 @@ InitTestScene*.unity*
 *.idea
 Assets/BK_AlchemistHouse.meta
 Assets/BK_AlchemistHouse/
+Assets/RunemarkStudio/
+Assets/RunemarkStudio 2.meta
+Assets/RunemarkStudio 2.meta
+Assets/RunemarkStudio.meta
+ProjectSettings/Packages/
+ProjectSettings/ShaderGraphSettings 2.asset
+ProjectSettings/ShaderGraphSettings 3.asset
+
+
+*.DS_Store
