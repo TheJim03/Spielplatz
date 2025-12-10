@@ -21,6 +21,7 @@ public class PressurePlate : MonoBehaviour
 
     [Header("Connected Doors")]
     [SerializeField] private SlidingDoor[] connectedDoors;
+    [SerializeField] private VanishDoor[] connectedVanishDoors;
 
     [Header("Feedback Toggles")]
     [SerializeField] private bool enableMovementFeedback = true;
@@ -127,6 +128,10 @@ public class PressurePlate : MonoBehaviour
                 door.OpenDoor();
             }
         }
+        foreach (VanishDoor door in connectedVanishDoors)
+        {
+            if (door != null) door.OpenDoor();
+        }
     }
 
     private void Release()
@@ -148,6 +153,10 @@ public class PressurePlate : MonoBehaviour
             {
                 door.CloseDoor();
             }
+        }
+        foreach (VanishDoor door in connectedVanishDoors)
+        {
+            if (door != null) door.CloseDoor();
         }
     }
 }
