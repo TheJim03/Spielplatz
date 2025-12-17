@@ -3,17 +3,14 @@ using TMPro;
 
 /// <summary>
 /// Zentraler Manager für globale Juiciness-Einstellungen.
-/// Kann per Tastendruck (default: J) ein-/ausgeschaltet werden.
+/// Immer aktiv, kein Toggle mehr per Input.
 /// </summary>
 public class JuicinessSettings : MonoBehaviour
 {
     public static JuicinessSettings instance;
 
     [Header("Global Juiciness Settings")]
-    [SerializeField] private bool juicinessEnabled = true;
-
-    [Header("Input")]
-    [SerializeField] private KeyCode toggleKey = KeyCode.J;
+    [SerializeField] private bool juicinessEnabled = true; // immer AN
 
     [Header("UI-Anzeige")]
     [SerializeField] private TextMeshProUGUI juicinessText;
@@ -39,6 +36,9 @@ public class JuicinessSettings : MonoBehaviour
 
     private void Start()
     {
+        // Sicherstellen, dass Juiciness wirklich AN ist
+        juicinessEnabled = true;
+
         if (mainLight == null)
             mainLight = FindFirstObjectByType<Light>();
 
@@ -49,43 +49,26 @@ public class JuicinessSettings : MonoBehaviour
         UpdateJuicinessText();
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(toggleKey))
-        {
-            ToggleJuiciness();
-        }
-    }
-
-    public void ToggleJuiciness()
-    {
-        juicinessEnabled = !juicinessEnabled;
-        Debug.Log($"Juiciness ist jetzt: {(juicinessEnabled ? "AN" : "AUS")}");
-        UpdateJuicinessText();
-        UpdateVisuals();
-    }
-
     private void UpdateJuicinessText()
     {
         if (juicinessText != null)
         {
-            juicinessText.text = "Juiciness: " + (juicinessEnabled ? "ON" : "OFF");
-            juicinessText.color = juicinessEnabled ? Color.green : Color.red;
+            juicinessText.text = "Juiciness: ON";
+            juicinessText.color = Color.green;
         }
     }
 
     private void UpdateVisuals()
     {
-        // einfache visuelle “Juiciness”-Änderungen
         if (mainLight != null)
         {
-            mainLight.intensity = juicinessEnabled ? 1.5f : 1f;
-            mainLight.color = juicinessEnabled ? new Color(1f, 0.95f, 0.8f) : Color.white;
+            mainLight.intensity = 1.5f;
+            mainLight.color = new Color(1f, 0.95f, 0.8f);
         }
 
         if (mainCamera != null)
         {
-            mainCamera.backgroundColor = juicinessEnabled ? new Color(0.95f, 0.95f, 1f) : Color.gray;
+            mainCamera.backgroundColor = new Color(0.95f, 0.95f, 1f);
         }
     }
 }
