@@ -8,51 +8,67 @@ public class PossessionManager : MonoBehaviour
     [Header("VCams")]
     public CinemachineCamera vcamBall;
     public CinemachineCamera vcamBlock;
-    public CinemachineCamera vcamAlt; // NEW
+    public CinemachineCamera vcamAlt1;
+    public CinemachineCamera vcamAlt2;
+    public CinemachineCamera vcamAlt3;
+    public CinemachineCamera vcamAlt4;
+    public CinemachineCamera vcamAlt5;
 
     [Header("Control Scripts")]
     public MonoBehaviour[] ballControllers;
     public MonoBehaviour[] blockControllers;
-    public MonoBehaviour[] altControllers; // NEW
+    public MonoBehaviour[] alt1Controllers;
+    public MonoBehaviour[] alt2Controllers;
+    public MonoBehaviour[] alt3Controllers;
+    public MonoBehaviour[] alt4Controllers;
+    public MonoBehaviour[] alt5Controllers;
 
     [Header("Scene Objects")]
     public GameObject ballObject;
 
     [Header("Look-to-Possess")]
     public Transform blockRoot;
-    public Transform altRoot; // NEW
+    public Transform alt1Root;
+    public Transform alt2Root;
+    public Transform alt3Root;
+    public Transform alt4Root;
+    public Transform alt5Root;
     public LayerMask possessableMask = ~0;
     public float lookMaxDistance = 30f;
 
     [Header("Audio Feedback")]
     public AudioClip switchToBallClip;
     public AudioClip switchToBlockClip;
-    public AudioClip switchToAltClip; // NEW
+    public AudioClip switchToAlt1Clip;
+    public AudioClip switchToAlt2Clip;
+    public AudioClip switchToAlt3Clip;
+    public AudioClip switchToAlt4Clip;
+    public AudioClip switchToAlt5Clip;
     [Range(0f, 1f)] public float switchVolume = 0.8f;
 
     [Header("Visual Feedback")]
     public ParticleSystem switchToBallEffect;
     public ParticleSystem switchToBlockEffect;
-    public ParticleSystem switchToAltEffect; // NEW
+    public ParticleSystem switchToAlt1Effect;
+    public ParticleSystem switchToAlt2Effect;
+    public ParticleSystem switchToAlt3Effect;
+    public ParticleSystem switchToAlt4Effect;
+    public ParticleSystem switchToAlt5Effect;
 
     [Header("Feedback Toggles")]
     public bool enableAudioFeedback = true;
     public bool enableVisualFeedback = true;
 
-    // ── FP-Rendering (Layer-Basiert) ────────────────────────────────────────────────
     [Header("First-Person Rendering")]
-    [Tooltip("Name des Layers, auf dem die sichtbaren Block-Meshes liegen (Child: PlayerBodyFP).")]
     public string fpLayerName = "PlayerBodyFP";
-    [Tooltip("Zusätzliche Wartezeit nach Blend-Ende, bevor der Körper ausgeblendet/eingeblendet wird.")]
     public float cullingPostBlendDelay = 0.05f;
-    [Tooltip("Maximale Wartezeit auf Blend-Ende, falls die API nichts meldet.")]
     public float cullingBlendTimeout = 1.0f;
 
-    private enum Controlled { Ball, Block, Alt } // NEW
+    private enum Controlled { Ball, Block, Alt1, Alt2, Alt3, Alt4, Alt5 }
     private Controlled current = Controlled.Ball;
 
-    private enum LookTarget { None, Block, Alt } // NEW
-    private LookTarget lookedTarget = LookTarget.None; // NEW
+    private enum LookTarget { None, Block, Alt1, Alt2, Alt3, Alt4, Alt5 }
+    private LookTarget lookedTarget = LookTarget.None;
 
     private AudioSource audioSource;
     private Camera mainCam;
@@ -82,20 +98,20 @@ public class PossessionManager : MonoBehaviour
 
     void Update()
     {
-        // Nur als Ball darfst du possess-en (wie vorher)
         lookedTarget = (current == Controlled.Ball) ? RaycastToTarget() : LookTarget.None;
 
         if (Input.GetMouseButtonDown(1) && current == Controlled.Ball)
         {
-            if (lookedTarget == LookTarget.Block && current != Controlled.Block)
-                ApplyState(Controlled.Block, playAudio: true);
-
-            if (lookedTarget == LookTarget.Alt && current != Controlled.Alt)
-                ApplyState(Controlled.Alt, playAudio: true);
+            if (lookedTarget == LookTarget.Block) ApplyState(Controlled.Block, true);
+            if (lookedTarget == LookTarget.Alt1) ApplyState(Controlled.Alt1, true);
+            if (lookedTarget == LookTarget.Alt2) ApplyState(Controlled.Alt2, true);
+            if (lookedTarget == LookTarget.Alt3) ApplyState(Controlled.Alt3, true);
+            if (lookedTarget == LookTarget.Alt4) ApplyState(Controlled.Alt4, true);
+            if (lookedTarget == LookTarget.Alt5) ApplyState(Controlled.Alt5, true);
         }
 
         if (Input.GetKeyDown(KeyCode.LeftShift) && current != Controlled.Ball)
-            ApplyState(Controlled.Ball, playAudio: true);
+            ApplyState(Controlled.Ball, true);
     }
 
     void ApplyState(Controlled who, bool playAudio = true, bool playVfx = true)
@@ -103,41 +119,40 @@ public class PossessionManager : MonoBehaviour
         current = who;
         bool toBall = (who == Controlled.Ball);
 
-        // Prüfe globale Juiciness-Einstellung
         bool juicy = JuicinessSettings.instance != null && JuicinessSettings.instance.IsJuicy;
 
-        // Kameras schalten
-        if (vcamBall)  vcamBall.Priority  = (who == Controlled.Ball) ? 20 : 0;
+        if (vcamBall) vcamBall.Priority = (who == Controlled.Ball) ? 20 : 0;
         if (vcamBlock) vcamBlock.Priority = (who == Controlled.Block) ? 20 : 0;
-        if (vcamAlt)   vcamAlt.Priority   = (who == Controlled.Alt) ? 20 : 0;
+        if (vcamAlt1) vcamAlt1.Priority = (who == Controlled.Alt1) ? 20 : 0;
+        if (vcamAlt2) vcamAlt2.Priority = (who == Controlled.Alt2) ? 20 : 0;
+        if (vcamAlt3) vcamAlt3.Priority = (who == Controlled.Alt3) ? 20 : 0;
+        if (vcamAlt4) vcamAlt4.Priority = (who == Controlled.Alt4) ? 20 : 0;
+        if (vcamAlt5) vcamAlt5.Priority = (who == Controlled.Alt5) ? 20 : 0;
 
-        // Kugel rendern
         if (ballObject) ballObject.SetActive(toBall);
 
-        // Steuerung schalten
         foreach (var s in ballControllers) if (s) s.enabled = (who == Controlled.Ball);
         foreach (var s in blockControllers) if (s) s.enabled = (who == Controlled.Block);
-        foreach (var s in altControllers) if (s) s.enabled = (who == Controlled.Alt); // NEW
+        foreach (var s in alt1Controllers) if (s) s.enabled = (who == Controlled.Alt1);
+        foreach (var s in alt2Controllers) if (s) s.enabled = (who == Controlled.Alt2);
+        foreach (var s in alt3Controllers) if (s) s.enabled = (who == Controlled.Alt3);
+        foreach (var s in alt4Controllers) if (s) s.enabled = (who == Controlled.Alt4);
+        foreach (var s in alt5Controllers) if (s) s.enabled = (who == Controlled.Alt5);
 
-        // FP-Culling: nur wenn Juiciness AN → mit Blend-Wait, sonst sofort
         if (cullingRoutine != null) StopCoroutine(cullingRoutine);
-        if (juicy)
-        {
-            cullingRoutine = StartCoroutine(SwapFPCullingAfterBlend(toBall));
-        }
-        else
-        {
-            // 🧊 Ohne Juiciness: Sofort snappen (kein Blend-Wait)
-            SwapFPCullingImmediate(toBall);
-        }
+        if (juicy) cullingRoutine = StartCoroutine(SwapFPCullingAfterBlend(toBall));
+        else SwapFPCullingImmediate(toBall);
 
-        // 🔊 Audio NUR wenn Juiciness AN
         if (enableAudioFeedback && juicy && playAudio && audioSource)
         {
             AudioClip clip = null;
             if (who == Controlled.Ball) clip = switchToBallClip;
             else if (who == Controlled.Block) clip = switchToBlockClip;
-            else if (who == Controlled.Alt) clip = switchToAltClip; // NEW
+            else if (who == Controlled.Alt1) clip = switchToAlt1Clip;
+            else if (who == Controlled.Alt2) clip = switchToAlt2Clip;
+            else if (who == Controlled.Alt3) clip = switchToAlt3Clip;
+            else if (who == Controlled.Alt4) clip = switchToAlt4Clip;
+            else if (who == Controlled.Alt5) clip = switchToAlt5Clip;
 
             if (clip)
             {
@@ -146,7 +161,6 @@ public class PossessionManager : MonoBehaviour
             }
         }
 
-        // 🎆 VFX NUR wenn Juiciness AN
         if (enableVisualFeedback && juicy && initialized && playVfx)
         {
             ParticleSystem prefab = null;
@@ -162,11 +176,11 @@ public class PossessionManager : MonoBehaviour
                 prefab = switchToBlockEffect;
                 pos = blockRoot ? blockRoot.position : transform.position;
             }
-            else if (who == Controlled.Alt)
-            {
-                prefab = switchToAltEffect; // NEW
-                pos = altRoot ? altRoot.position : transform.position; // NEW
-            }
+            else if (who == Controlled.Alt1) { prefab = switchToAlt1Effect; pos = alt1Root ? alt1Root.position : transform.position; }
+            else if (who == Controlled.Alt2) { prefab = switchToAlt2Effect; pos = alt2Root ? alt2Root.position : transform.position; }
+            else if (who == Controlled.Alt3) { prefab = switchToAlt3Effect; pos = alt3Root ? alt3Root.position : transform.position; }
+            else if (who == Controlled.Alt4) { prefab = switchToAlt4Effect; pos = alt4Root ? alt4Root.position : transform.position; }
+            else if (who == Controlled.Alt5) { prefab = switchToAlt5Effect; pos = alt5Root ? alt5Root.position : transform.position; }
 
             if (prefab)
             {
@@ -181,7 +195,6 @@ public class PossessionManager : MonoBehaviour
     {
         if (!mainCam || playerBodyLayer < 0) yield break;
 
-        // Warten bis Blend Ende (oder Timeout)
         float t = 0f;
         while (brain && IsBrainBlending(brain) && t < cullingBlendTimeout)
         {
@@ -195,7 +208,6 @@ public class PossessionManager : MonoBehaviour
         else mainCam.cullingMask &= ~bit;
     }
 
-    // 🧊 Neue Methode: Sofortiges Culling ohne Blend-Wartezeit
     void SwapFPCullingImmediate(bool toBall)
     {
         if (!mainCam || playerBodyLayer < 0) return;
@@ -211,7 +223,6 @@ public class PossessionManager : MonoBehaviour
         return false;
     }
 
-    // NEW: Raycast entscheidet zwischen Block und Alt
     LookTarget RaycastToTarget()
     {
         if (!mainCam) return LookTarget.None;
@@ -223,17 +234,16 @@ public class PossessionManager : MonoBehaviour
         Ray ray = new Ray(mainCam.transform.position, mainCam.transform.forward);
         if (Physics.Raycast(ray, out RaycastHit hit, lookMaxDistance, mask, QueryTriggerInteraction.Ignore))
         {
-            if (!hit.collider) return LookTarget.None;
-
             var tr = hit.collider.transform;
-
             if (blockRoot && tr.IsChildOf(blockRoot)) return LookTarget.Block;
-            if (altRoot && tr.IsChildOf(altRoot)) return LookTarget.Alt;
+            if (alt1Root && tr.IsChildOf(alt1Root)) return LookTarget.Alt1;
+            if (alt2Root && tr.IsChildOf(alt2Root)) return LookTarget.Alt2;
+            if (alt3Root && tr.IsChildOf(alt3Root)) return LookTarget.Alt3;
+            if (alt4Root && tr.IsChildOf(alt4Root)) return LookTarget.Alt4;
+            if (alt5Root && tr.IsChildOf(alt5Root)) return LookTarget.Alt5;
         }
-
         return LookTarget.None;
     }
 
-    // API beibehalten: "true", wenn du als Ball auf ein possessbares Ziel schaust
     public bool IsLookingAtTargetPublic() => (current == Controlled.Ball) && (lookedTarget != LookTarget.None);
 }
