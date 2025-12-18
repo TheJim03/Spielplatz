@@ -15,6 +15,7 @@ public class BookPageSlot : MonoBehaviour, IDropHandler
     [SerializeField] private Color emptyColor = new Color(1f, 1f, 1f, 0.3f);
     [SerializeField] private Color filledColor = Color.white;
     [SerializeField] private GameObject placeholderText; // "Seite X fehlt"
+    [SerializeField] private GameObject levelCompletePanel;
     
     [Header("Audio")]
     [SerializeField] private AudioClip correctPlaceSound;
@@ -118,7 +119,15 @@ public class BookPageSlot : MonoBehaviour, IDropHandler
         if (allFilled)
         {
             Debug.Log("🎉 BUCH VOLLSTÄNDIG! Alle Seiten sind platziert!");
-            // Hier später: Animation, Level Complete, etc.
+
+            // 1️⃣ Panel anzeigen
+            
+                levelCompletePanel.SetActive(true);
+
+            // 2️⃣ Spiel pausieren
+            Time.timeScale = 0f;
+
+            // Optional: Animation, Sound, Level Complete Logik
         }
     }
 
