@@ -1,0 +1,13 @@
+{
+    "asset": "9f91db4051f1e4b4b8ef435477728f42",
+    "fileName": "019b3127-8058-7844-b80d-9c07827f2b57.wav",
+    "prompt": "fail placement sound",
+    "negativePrompt": "",
+    "model": "5de0686a-fb27-40e5-9df0-28ae810d70ca",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "baa233d732c6f70636c89b9c5aa43607",
+    "duration": 1.0,
+    "autoTrim": true,
+    "hasReference": false
+}

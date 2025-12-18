@@ -1,0 +1,13 @@
+{
+    "asset": "f6c3d623d17a01c438a229f6d19426d8",
+    "fileName": "019b3126-01d0-700a-8174-60e6a236f163.wav",
+    "prompt": "place a peace of paper",
+    "negativePrompt": "",
+    "model": "5de0686a-fb27-40e5-9df0-28ae810d70ca",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "19e850d5aebe88dac1c05313572e61f1",
+    "duration": 1.0,
+    "autoTrim": true,
+    "hasReference": false
+}
