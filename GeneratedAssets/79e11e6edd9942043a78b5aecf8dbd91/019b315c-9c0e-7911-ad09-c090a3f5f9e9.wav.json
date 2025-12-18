@@ -1,0 +1,13 @@
+{
+    "asset": "79e11e6edd9942043a78b5aecf8dbd91",
+    "fileName": "019b315c-9c0e-7911-ad09-c090a3f5f9e9.wav",
+    "prompt": "footsteps of a ghost\n",
+    "negativePrompt": "",
+    "model": "5de0686a-fb27-40e5-9df0-28ae810d70ca",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "3ff7a9c654a37d678a93b74af8a94e18",
+    "duration": 10.0,
+    "autoTrim": false,
+    "hasReference": false
+}

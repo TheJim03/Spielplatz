@@ -1,0 +1,13 @@
+{
+    "asset": "adea686ceba85c248a67b240f4cb2e08",
+    "fileName": "019b3158-c0bb-716f-9f6b-da31c359abf7.wav",
+    "prompt": "footsteps of a knight\n",
+    "negativePrompt": "",
+    "model": "5de0686a-fb27-40e5-9df0-28ae810d70ca",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "27350305471da0803403ae43576936ef",
+    "duration": 10.0,
+    "autoTrim": false,
+    "hasReference": false
+}

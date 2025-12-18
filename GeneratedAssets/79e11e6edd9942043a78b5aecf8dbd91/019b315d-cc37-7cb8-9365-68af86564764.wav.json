@@ -1,0 +1,13 @@
+{
+    "asset": "79e11e6edd9942043a78b5aecf8dbd91",
+    "fileName": "019b315d-cc37-7cb8-9365-68af86564764.wav",
+    "prompt": "floating sound of a magical ghost\n\n\n",
+    "negativePrompt": "",
+    "model": "5de0686a-fb27-40e5-9df0-28ae810d70ca",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "19e263e50413fc28cdaf8e1aa01b0af2",
+    "duration": 10.0,
+    "autoTrim": false,
+    "hasReference": false
+}
