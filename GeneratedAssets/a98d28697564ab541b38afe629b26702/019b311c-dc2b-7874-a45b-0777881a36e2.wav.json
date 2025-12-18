@@ -1,0 +1,13 @@
+{
+    "asset": "a98d28697564ab541b38afe629b26702",
+    "fileName": "019b311c-dc2b-7874-a45b-0777881a36e2.wav",
+    "prompt": "collect a piece of paper sound\n",
+    "negativePrompt": "",
+    "model": "5de0686a-fb27-40e5-9df0-28ae810d70ca",
+    "modelName": "ElevenLabs Sound Effects V2",
+    "customSeed": -1,
+    "w3CTraceId": "871cd0f078f9b9a4e3e7f69dd3f5429c",
+    "duration": 2.0,
+    "autoTrim": true,
+    "hasReference": false
+}
