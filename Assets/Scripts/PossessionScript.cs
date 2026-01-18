@@ -8,6 +8,7 @@ public class PossessionManager : MonoBehaviour
     [Header("VCams")]
     public CinemachineCamera vcamBall;
     public CinemachineCamera vcamBlock;
+    public CinemachineCamera vcamMaus;
     public CinemachineCamera vcamAlt1;
     public CinemachineCamera vcamAlt2;
     public CinemachineCamera vcamAlt3;
@@ -22,6 +23,7 @@ public class PossessionManager : MonoBehaviour
     [Header("Control Scripts")]
     public MonoBehaviour[] ballControllers;
     public MonoBehaviour[] blockControllers;
+    public MonoBehaviour[] mausControllers;
     public MonoBehaviour[] alt1Controllers;
     public MonoBehaviour[] alt2Controllers;
     public MonoBehaviour[] alt3Controllers;
@@ -38,6 +40,7 @@ public class PossessionManager : MonoBehaviour
 
     [Header("Look-to-Possess")]
     public Transform blockRoot;
+    public Transform mausRoot;
     public Transform alt1Root;
     public Transform alt2Root;
     public Transform alt3Root;
@@ -54,6 +57,7 @@ public class PossessionManager : MonoBehaviour
     [Header("Audio Feedback")]
     public AudioClip switchToBallClip;
     public AudioClip switchToBlockClip;
+    public AudioClip switchToMausClip;
     public AudioClip switchToAlt1Clip;
     public AudioClip switchToAlt2Clip;
     public AudioClip switchToAlt3Clip;
@@ -69,6 +73,7 @@ public class PossessionManager : MonoBehaviour
     [Header("Visual Feedback")]
     public ParticleSystem switchToBallEffect;
     public ParticleSystem switchToBlockEffect;
+    public ParticleSystem switchToMausEffect;
     public ParticleSystem switchToAlt1Effect;
     public ParticleSystem switchToAlt2Effect;
     public ParticleSystem switchToAlt3Effect;
@@ -89,10 +94,10 @@ public class PossessionManager : MonoBehaviour
     public float cullingPostBlendDelay = 0.05f;
     public float cullingBlendTimeout = 1.0f;
 
-    private enum Controlled { Ball, Block, Alt1, Alt2, Alt3, Alt4, Alt5, Alt6, Alt7, Alt8, Alt9, Alt10 }
+    private enum Controlled { Ball, Block, Maus, Alt1, Alt2, Alt3, Alt4, Alt5, Alt6, Alt7, Alt8, Alt9, Alt10 }
     private Controlled current = Controlled.Ball;
 
-    private enum LookTarget { None, Block, Alt1, Alt2, Alt3, Alt4, Alt5, Alt6, Alt7, Alt8, Alt9, Alt10 }
+    private enum LookTarget { None, Block, Maus, Alt1, Alt2, Alt3, Alt4, Alt5, Alt6, Alt7, Alt8, Alt9, Alt10 }
     private LookTarget lookedTarget = LookTarget.None;
 
     private AudioSource audioSource;
@@ -108,7 +113,11 @@ public class PossessionManager : MonoBehaviour
         mainCam = Camera.main;
         if (mainCam) brain = mainCam.GetComponent<CinemachineBrain>();
 
-        if (audioSource) { audioSource.playOnAwake = false; audioSource.loop = false; }
+        if (audioSource)
+        {
+            audioSource.playOnAwake = false;
+            audioSource.loop = false;
+        }
 
         playerBodyLayer = LayerMask.NameToLayer(fpLayerName);
         if (playerBodyLayer < 0)
@@ -128,6 +137,7 @@ public class PossessionManager : MonoBehaviour
         if (Input.GetMouseButtonDown(1) && current == Controlled.Ball)
         {
             if (lookedTarget == LookTarget.Block) ApplyState(Controlled.Block, true);
+            if (lookedTarget == LookTarget.Maus) ApplyState(Controlled.Maus, true);
             if (lookedTarget == LookTarget.Alt1) ApplyState(Controlled.Alt1, true);
             if (lookedTarget == LookTarget.Alt2) ApplyState(Controlled.Alt2, true);
             if (lookedTarget == LookTarget.Alt3) ApplyState(Controlled.Alt3, true);
@@ -147,39 +157,40 @@ public class PossessionManager : MonoBehaviour
     void ApplyState(Controlled who, bool playAudio = true, bool playVfx = true)
     {
         current = who;
-        
-                // -------------------------------
-        // Alle Kerzen auf "Untagged" setzen
-                if (alt1Root) alt1Root.gameObject.tag = "Untagged";
-                if (alt2Root) alt2Root.gameObject.tag = "Untagged";
-                if (alt3Root) alt3Root.gameObject.tag = "Untagged";
-                if (alt4Root) alt4Root.gameObject.tag = "Untagged";
-                if (alt5Root) alt5Root.gameObject.tag = "Untagged";
-                if (alt6Root) alt6Root.gameObject.tag = "Untagged";
-                if (alt7Root) alt7Root.gameObject.tag = "Untagged";
-                if (alt8Root) alt8Root.gameObject.tag = "Untagged";
-                if (alt9Root) alt9Root.gameObject.tag = "Untagged";
-                if (alt10Root) alt10Root.gameObject.tag = "Untagged";
-        
-        // Die aktuell kontrollierte Kerze auf "Candle" setzen
-                if (who == Controlled.Alt1 && alt1Root) alt1Root.gameObject.tag = "Candle";
-                if (who == Controlled.Alt2 && alt2Root) alt2Root.gameObject.tag = "Candle";
-                if (who == Controlled.Alt3 && alt3Root) alt3Root.gameObject.tag = "Candle";
-                if (who == Controlled.Alt4 && alt4Root) alt4Root.gameObject.tag = "Candle";
-                if (who == Controlled.Alt5 && alt5Root) alt5Root.gameObject.tag = "Candle";
-                if (who == Controlled.Alt6 && alt6Root) alt6Root.gameObject.tag = "Candle";
-                if (who == Controlled.Alt7 && alt7Root) alt7Root.gameObject.tag = "Candle";
-                if (who == Controlled.Alt8 && alt8Root) alt8Root.gameObject.tag = "Candle";
-                if (who == Controlled.Alt9 && alt9Root) alt9Root.gameObject.tag = "Candle";
-                if (who == Controlled.Alt10 && alt10Root) alt10Root.gameObject.tag = "Candle";
+
         // -------------------------------
-        
+        // Alle Kerzen auf "Untagged" setzen
+        if (alt1Root) alt1Root.gameObject.tag = "Untagged";
+        if (alt2Root) alt2Root.gameObject.tag = "Untagged";
+        if (alt3Root) alt3Root.gameObject.tag = "Untagged";
+        if (alt4Root) alt4Root.gameObject.tag = "Untagged";
+        if (alt5Root) alt5Root.gameObject.tag = "Untagged";
+        if (alt6Root) alt6Root.gameObject.tag = "Untagged";
+        if (alt7Root) alt7Root.gameObject.tag = "Untagged";
+        if (alt8Root) alt8Root.gameObject.tag = "Untagged";
+        if (alt9Root) alt9Root.gameObject.tag = "Untagged";
+        if (alt10Root) alt10Root.gameObject.tag = "Untagged";
+
+        // Die aktuell kontrollierte Kerze auf "Candle" setzen
+        if (who == Controlled.Alt1 && alt1Root) alt1Root.gameObject.tag = "Candle";
+        if (who == Controlled.Alt2 && alt2Root) alt2Root.gameObject.tag = "Candle";
+        if (who == Controlled.Alt3 && alt3Root) alt3Root.gameObject.tag = "Candle";
+        if (who == Controlled.Alt4 && alt4Root) alt4Root.gameObject.tag = "Candle";
+        if (who == Controlled.Alt5 && alt5Root) alt5Root.gameObject.tag = "Candle";
+        if (who == Controlled.Alt6 && alt6Root) alt6Root.gameObject.tag = "Candle";
+        if (who == Controlled.Alt7 && alt7Root) alt7Root.gameObject.tag = "Candle";
+        if (who == Controlled.Alt8 && alt8Root) alt8Root.gameObject.tag = "Candle";
+        if (who == Controlled.Alt9 && alt9Root) alt9Root.gameObject.tag = "Candle";
+        if (who == Controlled.Alt10 && alt10Root) alt10Root.gameObject.tag = "Candle";
+        // -------------------------------
+
         bool toBall = (who == Controlled.Ball);
 
         bool juicy = JuicinessSettings.instance != null && JuicinessSettings.instance.IsJuicy;
 
         if (vcamBall) vcamBall.Priority = (who == Controlled.Ball) ? 20 : 0;
         if (vcamBlock) vcamBlock.Priority = (who == Controlled.Block) ? 20 : 0;
+        if (vcamMaus) vcamMaus.Priority = (who == Controlled.Maus) ? 20 : 0;
         if (vcamAlt1) vcamAlt1.Priority = (who == Controlled.Alt1) ? 20 : 0;
         if (vcamAlt2) vcamAlt2.Priority = (who == Controlled.Alt2) ? 20 : 0;
         if (vcamAlt3) vcamAlt3.Priority = (who == Controlled.Alt3) ? 20 : 0;
@@ -195,6 +206,7 @@ public class PossessionManager : MonoBehaviour
 
         foreach (var s in ballControllers) if (s) s.enabled = (who == Controlled.Ball);
         foreach (var s in blockControllers) if (s) s.enabled = (who == Controlled.Block);
+        foreach (var s in mausControllers) if (s) s.enabled = (who == Controlled.Maus);
         foreach (var s in alt1Controllers) if (s) s.enabled = (who == Controlled.Alt1);
         foreach (var s in alt2Controllers) if (s) s.enabled = (who == Controlled.Alt2);
         foreach (var s in alt3Controllers) if (s) s.enabled = (who == Controlled.Alt3);
@@ -215,6 +227,7 @@ public class PossessionManager : MonoBehaviour
             AudioClip clip = null;
             if (who == Controlled.Ball) clip = switchToBallClip;
             else if (who == Controlled.Block) clip = switchToBlockClip;
+            else if (who == Controlled.Maus) clip = switchToMausClip;
             else if (who == Controlled.Alt1) clip = switchToAlt1Clip;
             else if (who == Controlled.Alt2) clip = switchToAlt2Clip;
             else if (who == Controlled.Alt3) clip = switchToAlt3Clip;
@@ -247,6 +260,11 @@ public class PossessionManager : MonoBehaviour
             {
                 prefab = switchToBlockEffect;
                 pos = blockRoot ? blockRoot.position : transform.position;
+            }
+            else if (who == Controlled.Maus)
+            {
+                prefab = switchToMausEffect;
+                pos = mausRoot ? mausRoot.position : transform.position;
             }
             else if (who == Controlled.Alt1) { prefab = switchToAlt1Effect; pos = alt1Root ? alt1Root.position : transform.position; }
             else if (who == Controlled.Alt2) { prefab = switchToAlt2Effect; pos = alt2Root ? alt2Root.position : transform.position; }
@@ -296,7 +314,8 @@ public class PossessionManager : MonoBehaviour
 
     static bool IsBrainBlending(CinemachineBrain b)
     {
-        try { return b.ActiveBlend != null; } catch { }
+        try { return b.ActiveBlend != null; }
+        catch { }
         return false;
     }
 
@@ -313,6 +332,7 @@ public class PossessionManager : MonoBehaviour
         {
             var tr = hit.collider.transform;
             if (blockRoot && tr.IsChildOf(blockRoot)) return LookTarget.Block;
+            if (mausRoot && tr.IsChildOf(mausRoot)) return LookTarget.Maus;
             if (alt1Root && tr.IsChildOf(alt1Root)) return LookTarget.Alt1;
             if (alt2Root && tr.IsChildOf(alt2Root)) return LookTarget.Alt2;
             if (alt3Root && tr.IsChildOf(alt3Root)) return LookTarget.Alt3;
