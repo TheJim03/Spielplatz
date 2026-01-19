@@ -132,7 +132,18 @@ public class PossessionManager : MonoBehaviour
 
     void Update()
     {
-        lookedTarget = (current == Controlled.Ball) ? RaycastToTarget() : LookTarget.None;
+        // Neuen Blick-Target ermitteln (nur wenn Ball aktiv ist)
+        LookTarget newLookedTarget = (current == Controlled.Ball) ? RaycastToTarget() : LookTarget.None;
+
+        // Nur wenn sich der Target geändert hat, Highlights umschalten
+        if (newLookedTarget != lookedTarget)
+        {
+            // altes Ziel aus
+            UpdateLookHighlight(lookedTarget, false);
+            // neues Ziel an
+            UpdateLookHighlight(newLookedTarget, true);
+            lookedTarget = newLookedTarget;
+        }
 
         if (Input.GetMouseButtonDown(1) && current == Controlled.Ball)
         {
@@ -345,6 +356,37 @@ public class PossessionManager : MonoBehaviour
             if (alt10Root && tr.IsChildOf(alt10Root)) return LookTarget.Alt10;
         }
         return LookTarget.None;
+    }
+
+    // Blick-Highlight an/aus schalten
+    void UpdateLookHighlight(LookTarget target, bool on)
+    {
+        Transform root = null;
+
+        switch (target)
+        {
+            case LookTarget.Block: root = blockRoot; break;
+            case LookTarget.Maus: root = mausRoot; break;
+            case LookTarget.Alt1: root = alt1Root; break;
+            case LookTarget.Alt2: root = alt2Root; break;
+            case LookTarget.Alt3: root = alt3Root; break;
+            case LookTarget.Alt4: root = alt4Root; break;
+            case LookTarget.Alt5: root = alt5Root; break;
+            case LookTarget.Alt6: root = alt6Root; break;
+            case LookTarget.Alt7: root = alt7Root; break;
+            case LookTarget.Alt8: root = alt8Root; break;
+            case LookTarget.Alt9: root = alt9Root; break;
+            case LookTarget.Alt10: root = alt10Root; break;
+            case LookTarget.None:
+            default:
+                break;
+        }
+
+        if (!root) return;
+
+        var highlights = root.GetComponentsInChildren<LookHighlight>(includeInactive: true);
+        foreach (var h in highlights)
+            h.SetHighlighted(on);
     }
 
     public bool IsLookingAtTargetPublic() => (current == Controlled.Ball) && (lookedTarget != LookTarget.None);
