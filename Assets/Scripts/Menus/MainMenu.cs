@@ -6,7 +6,7 @@ public class MainMenu : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void PlayGame()
     {
-        SceneManager.LoadScene("ChangescapeV1");
+        SceneManager.LoadScene("TrailerScene");
     }
 
     public void QuitGame()

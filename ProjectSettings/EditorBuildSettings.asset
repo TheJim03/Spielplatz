@@ -6,11 +6,17 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/MainMenu.unity
+    path: Assets/Scenes/Wichtige Scenen/MainMenu.unity
     guid: 143ae9907b67018439b4cdc0772dc40b
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/ChangescapeV1.unity
     guid: 7d65ae942558e1a4ab9a370fa46a59a2
+  - enabled: 1
+    path: Assets/Scenes/Wichtige Scenen/ChangescapeV1.1.unity
+    guid: 390dfdb22b336f947a132004ea821ac9
+  - enabled: 1
+    path: Assets/Scenes/Wichtige Scenen/TrailerScene.unity
+    guid: 419b1f5aa73f88d46aab8b380ed54d4b
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 5d21d7dd0c052b243aa47f409e1d63d7, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
