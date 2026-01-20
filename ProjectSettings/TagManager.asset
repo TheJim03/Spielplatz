@@ -6,6 +6,7 @@ TagManager:
   tags:
   - BlockPlayer
   - Candle
+  - MousePlayer
   layers:
   - Default
   - TransparentFX
