@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using TMPro;
 
 public class Paper : MonoBehaviour
 {
@@ -16,6 +17,9 @@ public class Paper : MonoBehaviour
 
     [Header("Interaction")]
     public float interactionDistance = 3f;
+    
+    [Header("UI Text, der beim Hover angezeigt wird")]
+    public TMP_Text hoverText;
 
     private bool isCollected = false;
     private bool isPlayerLookingAt = false;
@@ -55,6 +59,7 @@ public class Paper : MonoBehaviour
                 {
                     isCollected = true;
                     StartCoroutine(CollectPaper());
+                    hoverText.gameObject.SetActive(false);
                 }
             }
             else
