@@ -66,6 +66,44 @@ public class SlidingDoor : MonoBehaviour
             doorAudioSource.playOnAwake = false;
             doorAudioSource.spatialBlend = 1f;
         }
+
+        // NICHT hier verbinden - CandleManager.instance könnte noch nicht existieren!
+        // Stattdessen verzögert verbinden
+        StartCoroutine(ConnectToCandleManagerDelayed());
+    }
+
+    private System.Collections.IEnumerator ConnectToCandleManagerDelayed()
+    {
+        // Warte einen Frame damit CandleManager.Awake() ausgeführt wurde
+        yield return null;
+
+        if (CandleManager.instance != null)
+        {
+            CandleManager.instance.onAllCandlesLit.AddListener(OnAllCandlesLit);
+            Debug.Log("[SlidingDoor] Mit CandleManager Event verbunden!");
+        }
+        else
+        {
+            Debug.LogError("[SlidingDoor] CandleManager.instance ist NULL! Stelle sicher dass CandleManager in der Szene existiert!");
+        }
+    }
+
+    void OnDestroy()
+    {
+        // Event-Listener aufräumen
+        if (CandleManager.instance != null)
+        {
+            CandleManager.instance.onAllCandlesLit.RemoveListener(OnAllCandlesLit);
+        }
+    }
+
+    /// <summary>
+    /// Wird vom CandleManager aufgerufen wenn alle Kerzen angezündet sind
+    /// </summary>
+    public void OnAllCandlesLit()
+    {
+        Debug.Log("[SlidingDoor] ⭐ ALLE KERZEN ANGEZÜNDET - TÜR ÖFFNET SICH! ⭐");
+        OpenDoor();
     }
 
     void Update()

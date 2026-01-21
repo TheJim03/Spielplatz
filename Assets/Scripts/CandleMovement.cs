@@ -90,6 +90,17 @@ public class CandleMovement : MonoBehaviour
     {
         isOn = !isOn;
         SetState(isOn);
+
+        // Manager benachrichtigen
+        if (CandleManager.instance != null)
+        {
+            Debug.Log($"[CandleMovement] Toggle auf {(isOn ? "AN" : "AUS")} - Benachrichtige Manager");
+            CandleManager.instance.NotifyCandleStateChanged(isOn);
+        }
+        else
+        {
+            Debug.LogError("[CandleMovement] CandleManager.instance ist NULL!");
+        }
     }
 
     void SetState(bool state)
