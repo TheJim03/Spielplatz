@@ -18,6 +18,8 @@ public class BookUI : MonoBehaviour
     [SerializeField] private KeyCode toggleKey = KeyCode.B;
     
     private bool isOpen = false;
+    
+    private float previousTimeScale = 1f;
 
     void Start()
     {
@@ -53,7 +55,13 @@ public class BookUI : MonoBehaviour
         // Wenn UI geöffnet wird, Papers im Inventar aktualisieren
         if (isOpen)
         {
+            previousTimeScale = Time.timeScale; // merken
+            Time.timeScale = 0f;
             RefreshInventory();
+        }
+        else
+        {
+            Time.timeScale = previousTimeScale;
         }
     }
 
@@ -113,6 +121,8 @@ public class BookUI : MonoBehaviour
         }
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        Time.timeScale = previousTimeScale;
     }
 
     /// <summary>
