@@ -14,14 +14,79 @@ public class Paper : MonoBehaviour
     public float pickupDuration = 0.5f;
     public float floatHeight = 1f;
 
-    private bool isCollected = false;
+    [Header("Interaction")]
+    public float interactionDistance = 3f;
 
-    private void OnTriggerEnter(Collider other)
+    private bool isCollected = false;
+    private bool isPlayerLookingAt = false;
+    private LookHighlight lookHighlight;
+
+    private void Awake()
     {
-        if (other.CompareTag("Player") && !isCollected)
+        lookHighlight = GetComponent<LookHighlight>();
+    }
+
+    private void Update()
+    {
+        if (isCollected) return;
+
+        // Raycast von Main Camera
+        Camera cam = Camera.main;
+        if (cam == null) return;
+
+        Ray ray = new Ray(cam.transform.position, cam.transform.forward);
+        RaycastHit hit;
+
+        // Prüfen ob Spieler auf dieses Paper schaut
+        if (Physics.Raycast(ray, out hit, interactionDistance))
         {
-            isCollected = true;
-            StartCoroutine(CollectPaper());
+            if (hit.collider.gameObject == gameObject)
+            {
+                if (!isPlayerLookingAt)
+                {
+                    isPlayerLookingAt = true;
+                    // Highlight aktivieren
+                    if (lookHighlight != null)
+                        lookHighlight.SetHighlighted(true);
+                }
+
+                // E-Taste zum Einsammeln
+                if (Input.GetKeyDown(KeyCode.E))
+                {
+                    isCollected = true;
+                    StartCoroutine(CollectPaper());
+                }
+            }
+            else
+            {
+                if (isPlayerLookingAt)
+                {
+                    isPlayerLookingAt = false;
+                    // Highlight deaktivieren
+                    if (lookHighlight != null)
+                        lookHighlight.SetHighlighted(false);
+                }
+            }
+        }
+        else
+        {
+            if (isPlayerLookingAt)
+            {
+                isPlayerLookingAt = false;
+                // Highlight deaktivieren
+                if (lookHighlight != null)
+                    lookHighlight.SetHighlighted(false);
+            }
+        }
+    }
+
+    // Optional: Visuelles Feedback wenn Spieler draufschaut
+    private void OnDrawGizmos()
+    {
+        if (isPlayerLookingAt)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(transform.position, 0.5f);
         }
     }
 
