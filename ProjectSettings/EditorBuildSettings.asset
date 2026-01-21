@@ -8,16 +8,17 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Wichtige Scenen/MainMenu.unity
     guid: 143ae9907b67018439b4cdc0772dc40b
-  - enabled: 0
-    path: Assets/Scenes/ChangescapeV1.unity
-    guid: 7d65ae942558e1a4ab9a370fa46a59a2
   - enabled: 1
     path: Assets/Scenes/Wichtige Scenen/ChangescapeV1.1.unity
     guid: 390dfdb22b336f947a132004ea821ac9
   - enabled: 1
     path: Assets/Scenes/Wichtige Scenen/TrailerScene.unity
     guid: 419b1f5aa73f88d46aab8b380ed54d4b
+  - enabled: 1
+    path: Assets/Scenes/Wichtige Scenen/OutroScene.unity
+    guid: d50a17f7e769cc348a0ca95c833048b0
   m_configObjects:
+    com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings: {fileID: 11400000, guid: 5d21d7dd0c052b243aa47f409e1d63d7, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

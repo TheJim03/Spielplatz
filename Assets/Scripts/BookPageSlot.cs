@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Ein Slot im Buch wo eine bestimmte Seite reingehört
@@ -122,12 +123,13 @@ public class BookPageSlot : MonoBehaviour, IDropHandler
 
             // 1️⃣ Panel anzeigen
             
-                levelCompletePanel.SetActive(true);
+            //    levelCompletePanel.SetActive(true);
 
             // 2️⃣ Spiel pausieren
             Time.timeScale = 0f;
-
+            
             // Optional: Animation, Sound, Level Complete Logik
+            SceneManager.LoadScene("OutroScene");
         }
     }
 
