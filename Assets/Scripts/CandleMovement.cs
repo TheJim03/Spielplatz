@@ -12,7 +12,14 @@ public class CandleMovement : MonoBehaviour
     public TMP_Text hintText;              // Press E
     public TMP_Text shiftHintText;         // NEW: Press Shift
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip lightSound;     // Sound beim Anzünden
+    [SerializeField] private AudioClip extinguishSound; // Sound beim Ausmachen
+    [Range(0f, 1f)]
+    [SerializeField] private float soundVolume = 0.7f;
+
     bool isOn = false;
+    private AudioSource audioSource;
 
     // 🔒 global – Tutorial darf NIE wieder erscheinen
     static bool eHintConsumed = false;
@@ -25,6 +32,15 @@ public class CandleMovement : MonoBehaviour
     {
         if (hintText) hintText.gameObject.SetActive(false);
         if (shiftHintText) shiftHintText.gameObject.SetActive(false); // NEW
+
+        // AudioSource Setup
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null && (lightSound != null || extinguishSound != null))
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+            audioSource.spatialBlend = 1f; // 3D Sound
+        }
     }
 
     void Update()
@@ -108,6 +124,19 @@ public class CandleMovement : MonoBehaviour
         if (flame) flame.SetActive(state);
         if (lightObject) lightObject.SetActive(state);
         if (particles) particles.SetActive(state);
+
+        // Sound abspielen (nur wenn Juiciness aktiviert)
+        bool juicy = JuicinessSettings.instance == null || JuicinessSettings.instance.IsJuicy;
+        if (juicy && audioSource != null)
+        {
+            AudioClip clipToPlay = state ? lightSound : extinguishSound;
+            if (clipToPlay != null)
+            {
+                audioSource.volume = soundVolume;
+                audioSource.PlayOneShot(clipToPlay);
+                Debug.Log($"[CandleMovement] Sound abgespielt: {(state ? "ANZÜNDEN" : "AUSMACHEN")} 🔊");
+            }
+        }
     }
 
     void ShowHint()
