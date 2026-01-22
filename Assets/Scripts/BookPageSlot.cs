@@ -13,6 +13,8 @@ public class BookPageSlot : MonoBehaviour, IDropHandler
     
     [Header("Visual Feedback")]
     [SerializeField] private Image slotImage;
+    [SerializeField] private Sprite emptySlotSprite;   // PNG wenn Slot leer ist
+    [SerializeField] private Sprite filledSlotSprite;  // PNG wenn Paper platziert wurde
     [SerializeField] private Color emptyColor = new Color(1f, 1f, 1f, 0.3f);
     [SerializeField] private Color filledColor = Color.white;
     [SerializeField] private GameObject placeholderText; // "Seite X fehlt"
@@ -85,6 +87,17 @@ public class BookPageSlot : MonoBehaviour, IDropHandler
     {
         if (slotImage != null)
         {
+            // Sprite wechseln wenn vorhanden
+            if (isFilled && filledSlotSprite != null)
+            {
+                slotImage.sprite = filledSlotSprite;
+            }
+            else if (!isFilled && emptySlotSprite != null)
+            {
+                slotImage.sprite = emptySlotSprite;
+            }
+            
+            // Farbe anpassen
             slotImage.color = isFilled ? filledColor : emptyColor;
         }
 
